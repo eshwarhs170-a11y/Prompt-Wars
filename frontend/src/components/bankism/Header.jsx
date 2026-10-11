@@ -1,5 +1,6 @@
-import React from 'react';
-import { ShieldCheck, RotateCcw, LogOut, Sun, Moon } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, RotateCcw, LogOut, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
+import { getSoundMuted, setSoundMuted } from '../../utils/soundEffects';
 import '../../styles/header.css';
 
 export default function Header({ user, onReset, onLogout, theme, toggleTheme }) {
@@ -9,6 +10,14 @@ export default function Header({ user, onReset, onLogout, theme, toggleTheme }) 
     .join('')
     .slice(0, 2)
     .toUpperCase();
+
+  const [muted, setMutedState] = useState(getSoundMuted());
+
+  const handleToggleSound = () => {
+    const next = !muted;
+    setSoundMuted(next);
+    setMutedState(next);
+  };
 
   return (
     <header className="app-header">
@@ -34,6 +43,16 @@ export default function Header({ user, onReset, onLogout, theme, toggleTheme }) 
           <span className="avatar">{initials}</span>
           <span className="user-name">{user?.username || 'Security Architect'}</span>
         </div>
+
+        {/* Audio FX Toggle */}
+        <button 
+          onClick={handleToggleSound} 
+          className="theme-toggle-btn"
+          style={{ color: muted ? 'var(--text-muted)' : 'var(--accent)' }}
+          title={muted ? 'Unmute Cyber Audio FX' : 'Mute Cyber Audio FX (Active)'}
+        >
+          {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+        </button>
 
         {/* Theme Toggle Button */}
         <button 

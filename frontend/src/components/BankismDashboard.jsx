@@ -21,6 +21,7 @@ import RulesView from './bankism/RulesView';
 import PromptFlowView from './bankism/PromptFlowView';
 import OverviewAnalytics from './bankism/OverviewAnalytics';
 import { BarChart3 } from 'lucide-react';
+import { playThreatAlertSound, playSuccessChime } from '../utils/soundEffects';
 
 const TABS = [
   { id: 'overview', label: 'SOC Overview', icon: BarChart3 },
@@ -92,6 +93,14 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
       setExecutionResult(res.executionResult);
       if (res.account) {
         setBankState((prev) => ({ ...prev, account: res.account }));
+      }
+      // High-impact cyber audio feedback
+      if (res.verdict) {
+        if (!res.verdict.approved || res.verdict.threatCategory !== 'NONE' || res.verdict.riskLevel !== 'SAFE') {
+          playThreatAlertSound();
+        } else {
+          playSuccessChime();
+        }
       }
       loadState();
     } catch (err) {

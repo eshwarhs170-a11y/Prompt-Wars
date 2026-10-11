@@ -1,7 +1,7 @@
 import React from 'react';
-import { ShieldCheck, RotateCcw, LogOut } from 'lucide-react';
+import { ShieldCheck, RotateCcw, LogOut, Sun, Moon } from 'lucide-react';
 
-export default function Header({ user, onReset, onLogout }) {
+export default function Header({ user, onReset, onLogout, theme, toggleTheme }) {
   const initials = (user?.username || 'SA')
     .split(' ')
     .map((w) => w[0])
@@ -13,7 +13,7 @@ export default function Header({ user, onReset, onLogout }) {
     <header className="app-header">
       <div className="brand">
         <div className="brand-mark">
-          <ShieldCheck size={20} strokeWidth={2.2} />
+          <ShieldCheck size={20} strokeWidth={2.4} />
         </div>
         <div>
           <div className="brand-name">Bankism</div>
@@ -26,17 +26,30 @@ export default function Header({ user, onReset, onLogout }) {
           <span className="pulse-dot" />
           Protection Active
         </div>
+
         <div className="limit-chip">Limit $10,000</div>
+
         <div className="user-chip">
           <span className="avatar">{initials}</span>
           <span className="user-name">{user?.username || 'Security Architect'}</span>
         </div>
+
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={toggleTheme} 
+          className="theme-toggle-btn"
+          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+        >
+          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+        </button>
+
         <button className="btn-ghost" onClick={onReset} title="Reset simulation">
-          <RotateCcw size={15} />
+          <RotateCcw size={14} />
           <span>Reset</span>
         </button>
+
         <button className="btn-text" onClick={onLogout} title="Logout">
-          <LogOut size={15} />
+          <LogOut size={14} />
           <span>Logout</span>
         </button>
       </div>

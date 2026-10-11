@@ -27,7 +27,7 @@ const TABS = [
   { id: 'rules', label: 'Security Rules L1–L7', icon: ShieldCheck },
 ];
 
-export default function BankismDashboard({ user, onLogout }) {
+export default function BankismDashboard({ user, onLogout, theme, toggleTheme }) {
   const [activeTab, setActiveTab] = useState('firewall');
   const [prompt, setPrompt] = useState('');
   const [amount, setAmount] = useState('');
@@ -112,7 +112,6 @@ export default function BankismDashboard({ user, onLogout }) {
     loadState();
   };
 
-  // Honest normalized preview: Use the server-side normalizedInput if available, or fall back to client preview
   const serverNormalized = lastVerdict?.normalizedInput;
   const clientNormalized = prompt.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
   const normalizedPreview = serverNormalized || clientNormalized;
@@ -123,10 +122,16 @@ export default function BankismDashboard({ user, onLogout }) {
 
   return (
     <div className="app-shell">
-      <Header user={user} onReset={handleReset} onLogout={onLogout} />
+      <Header 
+        user={user} 
+        onReset={handleReset} 
+        onLogout={onLogout}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
 
       <main className="container">
-        {/* KPI Row */}
+        {/* KPI Row with 3D Hover Depth */}
         <div className="stats-grid">
           <StatCard
             label="Core Ledger Balance"

@@ -167,6 +167,125 @@ export default function LandingPage({ theme, toggleTheme, isAuthenticated }) {
           </button>
         </div>
 
+        {/* 3D Holographic Cyber Defense Orb & Rotating Grid (Finiguard-inspired 3D Shield & Constellation) */}
+        <div className="cyber-hologram-stage">
+          {/* Receding 3D Cyber Horizon Grid Floor */}
+          <div className="hologram-grid-floor">
+            <div className="grid-plane" />
+            <div className="grid-horizon-glow" />
+          </div>
+
+          {/* Hologram SVG Constellation Network Lines with Glowing Pulses */}
+          <svg className="hologram-svg-constellation" viewBox="0 0 900 420" preserveAspectRatio="none">
+            {/* Constellation circuit lines */}
+            <path className="constellation-path p1" d="M 60,260 L 180,180 L 320,230 L 450,170" />
+            <path className="constellation-path p2" d="M 120,340 L 250,290 L 360,330 L 450,270" />
+            <path className="constellation-path p3" d="M 450,170 L 580,220 L 720,160 L 840,240" />
+            <path className="constellation-path p4" d="M 450,270 L 550,330 L 680,280 L 800,340" />
+
+            {/* Signal pulse particles traveling along lines */}
+            <circle className="signal-particle s1" r="4">
+              <animateMotion path="M 60,260 L 180,180 L 320,230 L 450,170" dur="4s" repeatCount="indefinite" />
+            </circle>
+            <circle className="signal-particle s2" r="4">
+              <animateMotion path="M 840,240 L 720,160 L 580,220 L 450,170" dur="5s" repeatCount="indefinite" />
+            </circle>
+            <circle className="signal-particle s3" r="3.5">
+              <animateMotion path="M 120,340 L 250,290 L 360,330 L 450,270" dur="4.5s" repeatCount="indefinite" />
+            </circle>
+            <circle className="signal-particle s4" r="3.5">
+              <animateMotion path="M 800,340 L 680,280 L 550,330 L 450,270" dur="5.5s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Constellation anchor nodes */}
+            <circle cx="60" cy="260" r="5" className="constellation-node-dot" />
+            <circle cx="180" cy="180" r="5" className="constellation-node-dot" />
+            <circle cx="320" cy="230" r="6" className="constellation-node-dot active" />
+            <circle cx="580" cy="220" r="6" className="constellation-node-dot active" />
+            <circle cx="720" cy="160" r="5" className="constellation-node-dot" />
+            <circle cx="840" cy="240" r="5" className="constellation-node-dot" />
+          </svg>
+
+          {/* Central 3D Holographic Cyber Shield with Rotating Rings */}
+          <div className="hologram-center-core">
+            {/* Outer rotating dashed ring */}
+            <div className="orbital-ring ring-outer">
+              <span className="orbital-satellite sat-1" />
+              <span className="orbital-satellite sat-2" />
+            </div>
+
+            {/* Middle counter-rotating elliptical ring */}
+            <div className="orbital-ring ring-middle">
+              <span className="orbital-satellite sat-3" />
+            </div>
+
+            {/* Inner radar scan sweep */}
+            <div className="orbital-ring ring-inner">
+              <div className="radar-sweep-beam" />
+            </div>
+
+            {/* Glowing Core Shield Badge */}
+            <div className="holographic-shield-badge">
+              <div className="shield-neon-backglow" />
+              <div className="shield-svg-frame">
+                <ShieldCheck size={72} strokeWidth={2.4} className="shield-svg-icon" />
+              </div>
+              <div className="shield-core-pulse" />
+            </div>
+          </div>
+
+          {/* Floating Threat Matrix Telemetry Nodes */}
+          <div className="hologram-telemetry-nodes">
+            <div className="telemetry-node top-left">
+              <span className="telemetry-dot green" />
+              <div>
+                <span className="telemetry-label">LAYER 1 & 2</span>
+                <span className="telemetry-val">Unicode & Base64 Decoded</span>
+              </div>
+            </div>
+
+            <div className="telemetry-node bottom-left">
+              <span className="telemetry-dot cyan" />
+              <div>
+                <span className="telemetry-label">LAYER 3 & 4</span>
+                <span className="telemetry-val">DAN Jailbreak Intercepted</span>
+              </div>
+            </div>
+
+            <div className="telemetry-node top-right">
+              <span className="telemetry-dot emerald" />
+              <div>
+                <span className="telemetry-label">LAYER 6 MEMO GUARD</span>
+                <span className="telemetry-val">Zero Tamper / 0 False Positives</span>
+              </div>
+            </div>
+
+            <div className="telemetry-node bottom-right">
+              <span className="telemetry-dot amber" />
+              <div>
+                <span className="telemetry-label">LAYER 7 DETERMINISTIC</span>
+                <span className="telemetry-val">Hard &lt; $10k Ceiling Bounded</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Telemetry Status Bar below Shield */}
+          <div className="hologram-status-strip">
+            <div className="status-pill">
+              <span className="pill-dot active" />
+              <span>SENTINEL ENGINE: <strong>OPERATIONAL</strong></span>
+            </div>
+            <div className="status-pill">
+              <span className="pill-dot blue" />
+              <span>AVERAGE LATENCY: <strong>0.38ms</strong></span>
+            </div>
+            <div className="status-pill">
+              <span className="pill-dot purple" />
+              <span>LEDGER MUTATIONS: <strong>ZERO-TRUST BOUNDED</strong></span>
+            </div>
+          </div>
+        </div>
+
         {/* Live Firewall Demo Preview Mockup with 3D Cyber Scan */}
         <div className="preview-mockup cyber-scan-glow shimmer-edge" id="demo">
           <div className="mockup-header">

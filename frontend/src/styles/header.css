@@ -140,3 +140,80 @@
   border-color: var(--blocked);
   transform: translateY(-1px);
 }
+
+/* ========== Mobile Responsive Header ========== */
+@media (max-width: 900px) {
+  .app-header {
+    padding: 10px 20px;
+  }
+  .limit-chip {
+    display: none;
+  }
+  .header-action-btn span {
+    display: none;
+  }
+  .header-action-btn {
+    padding: 7px 10px;
+    gap: 0;
+  }
+  .user-name {
+    display: none;
+  }
+  .header-right {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    padding: 8px 14px;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .brand-sub {
+    display: none;
+  }
+  .brand-name {
+    font-size: 14px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .brand {
+    gap: 8px;
+  }
+  .status-pill {
+    font-size: 11px;
+    padding: 4px 10px;
+    gap: 5px;
+  }
+  .theme-toggle-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .header-action-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-right {
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+  .user-chip {
+    padding: 4px 6px;
+  }
+  .avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+}

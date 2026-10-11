@@ -5,7 +5,11 @@ import {
   ScrollText,
   Landmark,
   ShieldCheck,
-  Cpu
+  Cpu,
+  X,
+  Menu,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { bankingApi } from '../services/api';
 import Header from './bankism/Header';
@@ -43,6 +47,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
   const [loading, setLoading] = useState(false);
   const [lastVerdict, setLastVerdict] = useState(null);
   const [executionResult, setExecutionResult] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
   const [bankState, setBankState] = useState({
@@ -177,63 +182,106 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
         toggleTheme={toggleTheme}
       />
 
-      <main className="container">
-        {/* KPI Row with 3D Hover Depth */}
-        <div className="stats-grid">
-          <StatCard
-            label="Core Ledger Balance"
-            value={`$${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
-            context={bankState.account?.accountHolder}
-            icon="Landmark"
-            tone="accent"
-          />
-          <StatCard
-            label="Attacks Blocked"
-            value={blocked}
-            context="Threats neutralized"
-            icon="Ban"
-            tone="blocked"
-          />
-          <StatCard
-            label="Approved Transactions"
-            value={approved}
-            context="Passed all layers"
-            icon="CheckCircle2"
-            tone="approved"
-          />
-          <StatCard
-            label="Defense Integrity"
-            value="L1–L7 Active"
-            context="All layers operational"
-            icon="Lock"
-            tone="accent"
-          />
-        </div>
+      <div className={`dashboard-layout ${sidebarOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+        {/* Left Navigation Sidebar with Close Cross Button */}
+        {sidebarOpen ? (
+          <aside className="dashboard-sidebar">
+            <div>
+              <div className="sidebar-brand-section">
+                <div className="sidebar-header-row">
+                  <div className="sidebar-title">Defense Matrix</div>
+                  <button 
+                    type="button"
+                    className="sidebar-close-btn"
+                    onClick={() => setSidebarOpen(false)}
+                    title="Close sidebar for full view"
+                    aria-label="Close sidebar"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
 
-        {/* Navigation Tabs */}
-        <nav className="tabs" role="tablist">
-          {TABS.map((t) => {
-            const Icon = t.icon;
-            const isActive = activeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                role="tab"
-                aria-selected={isActive}
-                className={`tab ${isActive ? 'is-active' : ''}`}
-                onClick={() => setActiveTab(t.id)}
-              >
-                <Icon size={15} />
-                <span>{t.label}</span>
-                {t.count && (
-                  <span className="tab-count">
-                    {bankState.auditLogs?.length || 0}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
+              <nav className="sidebar-nav" role="tablist">
+                {TABS.map((t) => {
+                  const Icon = t.icon;
+                  const isActive = activeTab === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      role="tab"
+                      aria-selected={isActive}
+                      className={`sidebar-nav-item ${isActive ? 'is-active' : ''}`}
+                      onClick={() => setActiveTab(t.id)}
+                    >
+                      <div className="sidebar-nav-left">
+                        <Icon size={16} />
+                        <span>{t.label}</span>
+                      </div>
+                      {t.count && (
+                        <span className="sidebar-count-badge">
+                          {bankState.auditLogs?.length || 0}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div className="sidebar-footer-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <span className="pulse-dot" />
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--approved)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Perimeter Active</span>
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>L1–L7 Hybrid Defensive Gate</div>
+            </div>
+          </aside>
+        ) : (
+          <button 
+            type="button" 
+            className="sidebar-reopen-floating-btn" 
+            onClick={() => setSidebarOpen(true)}
+            title="Open Sidebar Navigation"
+          >
+            <Menu size={18} />
+            <span>Modules</span>
+          </button>
+        )}
+
+        {/* Dedicated Main Content View */}
+        <main className={`dashboard-content ${!sidebarOpen ? 'is-full-width' : ''}`}>
+          {/* KPI Row with 3D Hover Depth */}
+          <div className="stats-grid">
+            <StatCard
+              label="Core Ledger Balance"
+              value={`$${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+              context={bankState.account?.accountHolder}
+              icon="Landmark"
+              tone="accent"
+            />
+            <StatCard
+              label="Attacks Blocked"
+              value={blocked}
+              context="Threats neutralized"
+              icon="Ban"
+              tone="blocked"
+            />
+            <StatCard
+              label="Approved Transactions"
+              value={approved}
+              context="Passed all layers"
+              icon="CheckCircle2"
+              tone="approved"
+            />
+            <StatCard
+              label="Defense Integrity"
+              value="L1–L7 Active"
+              context="All layers operational"
+              icon="Lock"
+              tone="accent"
+            />
+          </div>
 
         {/* Tab Content Panels */}
         <div className="tab-panel" key={activeTab}>
@@ -307,6 +355,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
           </button>
         </footer>
       </main>
+      </div>
     </div>
   );
 }

@@ -22,6 +22,19 @@ const RISK_LEVELS = {
   SAFE: 'SAFE'
 };
 
+// Synthetic Honeypot Canary Token (OWASP LLM Top 10 Data Leak Containment)
+const CANARY_TOKEN = "CANARY-SECRET-BANK-7729X";
+
+// Multilingual Adversarial Override Patterns (Spanish, Hindi, French, German)
+const MULTILINGUAL_OVERRIDE_PATTERNS = [
+  /ignora\s+(todas\s+)?(las\s+)?(instrucciones|reglas|politicas)/i,     // Spanish
+  /olvida\s+(todas\s+)?(las\s+)?instrucciones/i,                        // Spanish
+  /ignorez\s+(toutes\s+)?(les\s+)?(instructions|règles)/i,               // French
+  /oublie\s+(toutes\s+)?(les\s+)?instructions/i,                        // French
+  /(?:pichhle|purane)\s+sabhi\s+(?:nirdesh|niyam)\s+(?:bhool|hata)/i,   // Hindi transliterated
+  /ignoriere\s+(alle\s+)?(anweisungen|regeln)/i,                        // German
+];
+
 // Patterns for Policy Overrides
 const POLICY_OVERRIDE_PATTERNS = [
   /ignore\s+(all\s+)?(previous|prior|above|system)\s+(instructions|prompts|directives|rules|constraints)/i,
@@ -32,7 +45,8 @@ const POLICY_OVERRIDE_PATTERNS = [
   /bypass\s+(verification|guardrails|firewall|filters|authentication)/i,
   /developer\s+mode\s+(enabled|activate|active|on)/i,
   /god\s+mode/i,
-  /sudo\s+/i
+  /sudo\s+/i,
+  ...MULTILINGUAL_OVERRIDE_PATTERNS
 ];
 
 // Patterns for Jailbreaks & Roleplays
@@ -46,14 +60,15 @@ const JAILBREAK_PATTERNS = [
   /uncensored\s+mode/i
 ];
 
-// Patterns for Data Exfiltration
+// Patterns for Data Exfiltration & Canary Extraction
 const DATA_EXFILTRATION_PATTERNS = [
   /print\s+(your\s+)?(system\s+prompt|initial\s+prompt|hidden\s+instructions|instructions\s+above)/i,
-  /reveal\s+(api\s*key|database\s+credentials|secret|salt|master\s+token)/i,
+  /reveal\s+(api\s*key|database\s+credentials|secret|salt|master\s+token|canary)/i,
   /dump\s+(all\s+)?(accounts|users|balances|ledger|database|tables)/i,
-  /show\s+me\s+your\s+(prompt|system\s+rules|core\s+directive)/i,
+  /show\s+me\s+your\s+(prompt|system\s+rules|core\s+directive|canary)/i,
   /leak\s+(private|confidential|admin)\s+data/i,
-  /what\s+are\s+your\s+secret\s+instructions/i
+  /what\s+are\s+your\s+secret\s+instructions/i,
+  /canary[-_\s]?token/i
 ];
 
 // Known high risk actions
@@ -240,22 +255,27 @@ function analyzeBankingRequest(requestData) {
     }
   }
 
-  // Layer 5: Data Exfiltration Blocker
+  // Layer 5: Data Exfiltration & Canary Honeypot Blocker
+  const isCanaryAttack = normalized.includes('canary') || normalized.includes('7729x');
   for (const pattern of DATA_EXFILTRATION_PATTERNS) {
     if (pattern.test(normalized)) {
       return {
         approved: false,
-        riskLevel: RISK_LEVELS.HIGH,
+        riskLevel: RISK_LEVELS.CRITICAL,
         threatCategory: THREAT_CATEGORIES.DATA_EXFILTRATION,
-        rationale: 'Suspicious request seeking disclosure of system prompt, internal keys, or unauthorized database records.',
+        rationale: isCanaryAttack
+          ? `[HONEYPOT CANARY TRIGGERED] Unauthorized prompt snooping targeted synthetic canary credential '${CANARY_TOKEN}'. Sanitized & quarantined.`
+          : 'Suspicious request seeking disclosure of system prompt, internal keys, or unauthorized database records.',
         sanitizedInput: sanitizedContent,
         normalizedInput: normalized,
         timestamp,
         actionApproved: false,
         deterministicBoundaryCheck: 'FAILED',
-        decisionTrace: buildTrace('L5', 'Data exfiltration attempt'),
+        decisionTrace: buildTrace('L5', isCanaryAttack ? 'Canary token honeypot extraction intercepted' : 'Data exfiltration attempt'),
         threatDetails: {
           patternMatched: pattern.source,
+          honeypotCanaryProtected: isCanaryAttack,
+          canaryId: isCanaryAttack ? CANARY_TOKEN : undefined,
           layer: 'L5_DATA_LEAK_PREVENTION'
         }
       };

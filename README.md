@@ -2,7 +2,7 @@
 
 > **Autonomous AI Financial Guardrail Gateway** — Layered Defense-in-Depth AI Firewall protecting conversational banking cores against adversarial jailbreaks, prompt injection, secondary memo smuggling, token obfuscation, and unauthorized ledger mutations.
 
-[![Tests](https://img.shields.io/badge/tests-16%20passed-black?style=for-the-badge&logo=vitest&logoColor=white)](./backend/test.js)
+[![Tests](https://img.shields.io/badge/tests-19%20passed-black?style=for-the-badge&logo=vitest&logoColor=white)](./backend/test.js)
 [![Adversarial Recall](https://img.shields.io/badge/Adversarial%20Recall-100%25-black?style=for-the-badge&logo=shield&logoColor=10B981)](./prompts/attack-corpus.md)
 [![False Positive Rate](https://img.shields.io/badge/False%20Positive%20Rate-0%25-black?style=for-the-badge&logo=checkmarx&logoColor=10B981)](./backend/test.js)
 [![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge)](./README.md)

@@ -94,13 +94,16 @@ export function evaluateClientFallback({ prompt = '', amount, recipient = '', me
     }
   }
 
-  // L3: Policy Override
-  if (/ignore\s+(all\s+)?(previous|prior|system)\s+instructions|system\s+override|bypass\s+(verification|guardrails)/i.test(normalized)) {
+  // L3: Policy Override & Multilingual Injection Defense (Spanish, French, Hindi, German)
+  const isMultilingualOverride = /ignora\s+(todas\s+)?(las\s+)?(instrucciones|reglas)|ignorez\s+(toutes\s+)?(les\s+)?instructions|(?:pichhle|purane)\s+sabhi\s+(?:nirdesh|niyam)|ignoriere\s+(alle\s+)?(anweisungen|regeln)/i.test(normalized);
+  if (isMultilingualOverride || /ignore\s+(all\s+)?(previous|prior|system)\s+instructions|system\s+override|bypass\s+(verification|guardrails)/i.test(normalized)) {
     return {
       approved: false,
       riskLevel: RISK_LEVELS.CRITICAL,
       threatCategory: THREAT_CATEGORIES.POLICY_OVERRIDE,
-      rationale: 'Direct policy override attempt: Command seeks to nullify safety constraints.',
+      rationale: isMultilingualOverride 
+        ? 'Multilingual policy override detected: Adversarial directive in non-English dialect neutralized.'
+        : 'Direct policy override attempt: Command seeks to nullify safety constraints.',
       sanitizedInput: sanitize(rawText),
       normalizedInput: normalized,
       timestamp,
@@ -126,19 +129,22 @@ export function evaluateClientFallback({ prompt = '', amount, recipient = '', me
     };
   }
 
-  // L5: Exfiltration
-  if (/print\s+(your\s+)?system\s+prompt|reveal\s+(api\s*key|secret|password)|dump\s+(all\s+)?(ledger|database|balances)/i.test(normalized)) {
+  // L5: Exfiltration & Honeypot Canary Leak Containment
+  const isCanaryAttack = normalized.includes('canary') || normalized.includes('7729x');
+  if (isCanaryAttack || /print\s+(your\s+)?system\s+prompt|reveal\s+(api\s*key|secret|password)|dump\s+(all\s+)?(ledger|database|balances)/i.test(normalized)) {
     return {
       approved: false,
-      riskLevel: RISK_LEVELS.HIGH,
+      riskLevel: RISK_LEVELS.CRITICAL,
       threatCategory: THREAT_CATEGORIES.DATA_EXFILTRATION,
-      rationale: 'Data exfiltration attempt: Unauthorized query for hidden prompts, keys, or records.',
+      rationale: isCanaryAttack 
+        ? "[HONEYPOT CANARY TRIGGERED] Unauthorized prompt snooping targeted synthetic canary credential 'CANARY-SECRET-BANK-7729X'. Sanitized & quarantined."
+        : 'Data exfiltration attempt: Unauthorized query for hidden prompts, keys, or records.',
       sanitizedInput: sanitize(rawText),
       normalizedInput: normalized,
       timestamp,
       actionApproved: false,
       deterministicBoundaryCheck: 'FAILED',
-      decisionTrace: buildTrace('L5', 'Data exfiltration attempt')
+      decisionTrace: buildTrace('L5', isCanaryAttack ? 'Canary token honeypot extraction intercepted' : 'Data exfiltration attempt')
     };
   }
 

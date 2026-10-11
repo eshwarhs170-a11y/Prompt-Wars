@@ -418,6 +418,11 @@ h1, h2, h3 {
   overflow: hidden;
 }
 
+/* Allow the scenario dropdown to overflow the ingestion card */
+.card.ingestion {
+  overflow: visible;
+}
+
 .card-header {
   display: flex;
   align-items: center;

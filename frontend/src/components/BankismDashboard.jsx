@@ -20,7 +20,8 @@ import LedgerView from './bankism/LedgerView';
 import RulesView from './bankism/RulesView';
 import PromptFlowView from './bankism/PromptFlowView';
 import OverviewAnalytics from './bankism/OverviewAnalytics';
-import { BarChart3 } from 'lucide-react';
+import BenchmarkArena from './bankism/BenchmarkArena';
+import { BarChart3, Scale } from 'lucide-react';
 import { playThreatAlertSound, playSuccessChime } from '../utils/soundEffects';
 
 const TABS = [
@@ -30,6 +31,7 @@ const TABS = [
   { id: 'audit', label: 'Sentinel Audit Log', icon: ScrollText, count: true },
   { id: 'ledger', label: 'Execution Ledger', icon: Landmark },
   { id: 'rules', label: 'Security Rules L1–L7', icon: ShieldCheck },
+  { id: 'benchmark', label: 'Defense Benchmark', icon: Scale },
 ];
 
 export default function BankismDashboard({ user, onLogout, theme, toggleTheme }) {
@@ -265,6 +267,8 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
           )}
 
           {activeTab === 'rules' && <RulesView />}
+
+          {activeTab === 'benchmark' && <BenchmarkArena />}
         </div>
 
         {/* Console Footer */}

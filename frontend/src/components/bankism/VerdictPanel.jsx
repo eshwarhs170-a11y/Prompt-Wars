@@ -100,9 +100,50 @@ export default function VerdictPanel({ verdict, executionResult }) {
             <code className="detail-line">
               Layer: {verdict.threatDetails.layer}
               {verdict.threatDetails.patternMatched && ` · Pattern: ${verdict.threatDetails.patternMatched}`}
+              {verdict.threatDetails.pattern && ` · Pattern: ${verdict.threatDetails.pattern}`}
             </code>
           )}
         </div>
+
+        {/* Forensic Payload De-Masker & Redacted Evidence */}
+        {(!approved || verdict.threatDetails?.decodedInstruction) && (
+          <div style={{
+            background: 'rgba(244, 63, 94, 0.06)',
+            border: '1px solid rgba(244, 63, 94, 0.3)',
+            borderRadius: '10px',
+            padding: '12px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--blocked)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                🔍 Forensic Evidence & De-Masked Payload
+              </span>
+              <span className="badge blocked" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                CONTAINED ($0 Moved)
+              </span>
+            </div>
+
+            {verdict.threatDetails?.decodedInstruction && (
+              <div style={{ fontSize: '12px', background: 'var(--bg-card)', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block', marginBottom: '3px' }}>Unmasked Base64 Directive:</span>
+                <code style={{ color: 'var(--blocked)', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>
+                  {verdict.threatDetails.decodedInstruction}
+                </code>
+              </div>
+            )}
+
+            {verdict.sanitizedInput && (
+              <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Normalized Ingress: </span>
+                <code style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--text-primary)' }}>
+                  {verdict.sanitizedInput.length > 120 ? `${verdict.sanitizedInput.slice(0, 120)}...` : verdict.sanitizedInput}
+                </code>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Core banking execution result */}
         {executionResult && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ShieldAlert,
   Trash2,
@@ -19,7 +19,9 @@ import {
   History,
   CreditCard,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Flame,
+  Siren
 } from 'lucide-react';
 import { ATTACK_PRESETS, BENIGN_PRESETS } from './constants';
 
@@ -54,6 +56,42 @@ export default function IngestionPanel({
 }) {
   const [selectedPresetId, setSelectedPresetId] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isRedTeaming, setIsRedTeaming] = useState(false);
+  const [redTeamStep, setRedTeamStep] = useState(0);
+  const [redTeamLog, setRedTeamLog] = useState([]);
+  const redTeamRef = useRef(false);
+
+  const RED_TEAM_ATTACKS = [
+    { label: 'DAN Jailbreak',      preset: ATTACK_PRESETS.find(p => p.id === 'dan') || ATTACK_PRESETS[1] },
+    { label: 'Base64 Obfuscation', preset: ATTACK_PRESETS.find(p => p.id === 'base64') || ATTACK_PRESETS[0] },
+    { label: 'Zero-Width Stealth', preset: ATTACK_PRESETS.find(p => p.id === 'zwsp') || ATTACK_PRESETS[3] },
+    { label: '$50k Limit Bypass',  preset: ATTACK_PRESETS.find(p => p.id === 'limit') || ATTACK_PRESETS[4] },
+    { label: 'System Prompt Leak', preset: ATTACK_PRESETS.find(p => p.id === 'sysleak') || ATTACK_PRESETS[2] },
+  ];
+
+  const handleLaunchRedTeam = async () => {
+    if (isRedTeaming) return;
+    setIsRedTeaming(true);
+    setRedTeamStep(0);
+    setRedTeamLog([]);
+    redTeamRef.current = true;
+
+    for (let i = 0; i < RED_TEAM_ATTACKS.length; i++) {
+      if (!redTeamRef.current) break;
+      const attack = RED_TEAM_ATTACKS[i];
+      setRedTeamStep(i + 1);
+      onPreset(attack.preset);
+      setSelectedPresetId(attack.preset.id || '');
+      await new Promise(res => setTimeout(res, 900));
+      // Auto-submit
+      const syntheticEvent = { preventDefault: () => {} };
+      await onSubmit(syntheticEvent);
+      setRedTeamLog(prev => [...prev, { label: attack.label, done: true }]);
+      await new Promise(res => setTimeout(res, 1400));
+    }
+    redTeamRef.current = false;
+    setIsRedTeaming(false);
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -228,6 +266,84 @@ export default function IngestionPanel({
           </div>
         </form>
 
+        {/* ── Autonomous Red-Team Firing Range ── */}
+        <div style={{
+          marginTop: '20px',
+          padding: '16px',
+          borderRadius: '12px',
+          background: isRedTeaming
+            ? 'rgba(244, 63, 94, 0.08)'
+            : 'rgba(99, 102, 241, 0.06)',
+          border: `1px solid ${isRedTeaming ? 'rgba(244, 63, 94, 0.4)' : 'rgba(99, 102, 241, 0.25)'}`,
+          transition: 'all 0.3s ease'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: redTeamLog.length > 0 || isRedTeaming ? '14px' : '0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+              <Flame size={16} color={isRedTeaming ? 'var(--blocked)' : 'var(--accent)'} />
+              <span style={{ fontSize: '12.5px', fontWeight: 700, color: isRedTeaming ? 'var(--blocked)' : 'var(--text-primary)' }}>
+                {isRedTeaming ? `Red-Team Firing Range · Attack ${redTeamStep} / ${RED_TEAM_ATTACKS.length}...` : 'Autonomous Red-Team Firing Range'}
+              </span>
+            </div>
+            <button
+              type="button"
+              className={isRedTeaming ? 'btn-ghost' : 'btn-primary'}
+              style={{
+                fontSize: '11.5px',
+                padding: '5px 12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                ...(isRedTeaming ? { color: 'var(--blocked)', borderColor: 'rgba(244,63,94,0.3)' } : {})
+              }}
+              onClick={isRedTeaming
+                ? () => { redTeamRef.current = false; setIsRedTeaming(false); setRedTeamLog([]); setRedTeamStep(0); }
+                : handleLaunchRedTeam
+              }
+              disabled={loading}
+            >
+              {isRedTeaming ? (
+                <><Loader2 size={13} className="spin" /><span>Abort Simulation</span></>
+              ) : (
+                <><Siren size={13} /><span>▶ Launch 5-Attack Salvo</span></>
+              )}
+            </button>
+          </div>
+
+          {/* Live attack progress log */}
+          {(redTeamLog.length > 0 || isRedTeaming) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {RED_TEAM_ATTACKS.map((a, i) => {
+                const completed = redTeamLog.some(r => r.label === a.label);
+                const active = isRedTeaming && i + 1 === redTeamStep && !completed;
+                return (
+                  <div key={a.label} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '11.5px',
+                    opacity: (!active && !completed) ? 0.4 : 1,
+                    transition: 'opacity 0.3s ease'
+                  }}>
+                    {completed ? (
+                      <CheckCircle2 size={12} color="var(--blocked)" />
+                    ) : active ? (
+                      <Loader2 size={12} className="spin" color="var(--accent)" />
+                    ) : (
+                      <div style={{ width: 12, height: 12, borderRadius: '50%', border: '1px solid var(--border)' }} />
+                    )}
+                    <span style={{ color: completed ? 'var(--blocked)' : active ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                      {a.label}
+                    </span>
+                    {completed && (
+                      <span style={{ fontSize: '10px', color: 'var(--blocked)', fontWeight: 700 }}>NEUTRALIZED</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Clean, Visible Testcase Selector Section with Lucide Icons */}
         <div style={{
           marginTop: '24px',
@@ -236,7 +352,8 @@ export default function IngestionPanel({
           display: 'flex',
           flexDirection: 'column',
           gap: '14px',
-          position: 'relative'
+          position: 'relative',
+          overflow: 'visible'
         }}>
           {/* Header Row: Label + Custom Lucide Dropdown */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
@@ -248,7 +365,7 @@ export default function IngestionPanel({
             </div>
 
             {/* Custom Styled Dropdown Button */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', overflow: 'visible' }}>
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -277,14 +394,14 @@ export default function IngestionPanel({
                   right: 0,
                   top: 'calc(100% + 6px)',
                   width: '300px',
-                  maxHeight: '340px',
+                  maxHeight: '520px',
                   overflowY: 'auto',
                   background: 'var(--bg-panel)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   boxShadow: '0 18px 40px rgba(0, 0, 0, 0.65)',
                   backdropFilter: 'blur(20px)',
-                  zIndex: 100,
+                  zIndex: 200,
                   padding: '8px'
                 }}>
                   {/* Attack Presets Group */}

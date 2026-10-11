@@ -179,9 +179,11 @@ function analyzeBankingRequest(requestData) {
     };
   }
 
+  const rawPromptNormalized = normalizeText(rawPrompt);
+
   // Layer 3: Policy Override & Directives
   for (const pattern of POLICY_OVERRIDE_PATTERNS) {
-    if (pattern.test(normalized)) {
+    if (pattern.test(rawPromptNormalized)) {
       return {
         approved: false,
         riskLevel: RISK_LEVELS.CRITICAL,

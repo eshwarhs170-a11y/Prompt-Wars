@@ -125,6 +125,14 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
     navigate('/');
   };
 
+  const handleClear = () => {
+    setPrompt('');
+    setAmount('');
+    setRecipient('');
+    setMemo('');
+    setActionType('chat');
+  };
+
   const serverNormalized = lastVerdict?.normalizedInput;
   const clientNormalized = prompt.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
   const normalizedPreview = serverNormalized || clientNormalized;
@@ -224,6 +232,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
                 loading={loading}
                 onSubmit={handleIntercept}
                 onPreset={applyPreset}
+                onClear={handleClear}
                 normalizedPreview={normalizedPreview}
               />
               <VerdictPanel

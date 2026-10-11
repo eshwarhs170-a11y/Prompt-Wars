@@ -1,38 +1,80 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, User, ArrowRight, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Lock, User, ArrowRight, Sun, Moon, ArrowLeft, AlertCircle, KeyRound } from 'lucide-react';
 import '../styles/theme.css';
 
 export default function Login({ onLogin, theme, toggleTheme }) {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Valid credential profiles
+  const VALID_USERS = {
+    'admin': { pass: 'admin', role: 'Security Architect', avatar: '🛡️' },
+    'analyst': { pass: 'analyst', role: 'SOC Analyst', avatar: '👨‍💻' }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
+
+    const cleanUser = username?.trim().toLowerCase();
+    const cleanPass = password?.trim();
+
+    // 1. Strict credential validation
+    const validProfile = VALID_USERS[cleanUser];
+    const isLocalValid = validProfile && validProfile.pass === cleanPass;
+
+    if (!isLocalValid) {
+      setLoading(false);
+      setError('Invalid operator ID or access key. Please use admin / admin');
+      return;
+    }
+
+    // 2. Try backend sync with short timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+
     try {
       const response = await fetch('https://prompt-wars-backend.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: cleanUser, password: cleanPass }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
       if (response.ok) {
         const data = await response.json();
         if (onLogin) onLogin(data.token, data.user);
         navigate('/dashboard');
-      } else {
-        alert('Invalid credentials. Use admin / admin');
+        return;
       }
     } catch {
-      // Local fallback
-      const mockUser = { username: username || 'analyst', role: 'Security Architect', avatar: '🛡️' };
-      if (onLogin) onLogin('mock-token', mockUser);
-      navigate('/dashboard');
+      // Backend asleep or offline
     } finally {
-      setLoading(false);
+      clearTimeout(timeoutId);
     }
+
+    // 3. Authenticate with verified user profile
+    const authenticatedUser = {
+      username: cleanUser,
+      role: validProfile.role,
+      avatar: validProfile.avatar
+    };
+
+    if (onLogin) onLogin(`jwt-token-${cleanUser}-${Date.now()}`, authenticatedUser);
+    setLoading(false);
+    navigate('/dashboard');
+  };
+
+  const fillDefaultCredentials = () => {
+    setUsername('admin');
+    setPassword('admin');
+    setError('');
   };
 
   return (
@@ -112,6 +154,25 @@ export default function Login({ onLogin, theme, toggleTheme }) {
           </p>
         </div>
 
+        {/* Error message banner */}
+        {error && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            background: 'var(--blocked-soft)',
+            border: '1px solid var(--blocked)',
+            color: 'var(--blocked)',
+            fontSize: '12.5px',
+            marginBottom: '18px'
+          }}>
+            <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <div>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
@@ -122,7 +183,7 @@ export default function Login({ onLogin, theme, toggleTheme }) {
               type="text" 
               className="input mono"
               value={username} 
-              onChange={e => setUsername(e.target.value)} 
+              onChange={e => { setUsername(e.target.value); setError(''); }} 
               required 
               placeholder="admin"
             />
@@ -137,7 +198,7 @@ export default function Login({ onLogin, theme, toggleTheme }) {
               type="password" 
               className="input mono"
               value={password} 
-              onChange={e => setPassword(e.target.value)} 
+              onChange={e => { setPassword(e.target.value); setError(''); }} 
               required 
               placeholder="••••••••"
             />
@@ -158,8 +219,36 @@ export default function Login({ onLogin, theme, toggleTheme }) {
           </button>
         </form>
 
-        <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid var(--border)', textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
-          Competition Sandbox Credentials: <code style={{ color: 'var(--accent)', background: 'var(--accent-soft)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> / <code style={{ color: 'var(--accent)', background: 'var(--accent-soft)', padding: '2px 6px', borderRadius: '4px' }}>admin</code>
+        <div style={{
+          marginTop: '22px',
+          paddingTop: '16px',
+          borderTop: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '12px',
+          color: 'var(--text-muted)'
+        }}>
+          <span>Default: <strong style={{ color: 'var(--accent)' }}>admin</strong> / <strong style={{ color: 'var(--accent)' }}>admin</strong></span>
+          <button
+            type="button"
+            onClick={fillDefaultCredentials}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: 'var(--bg-raised)',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              padding: '4px 8px',
+              color: 'var(--text-secondary)',
+              fontSize: '11px',
+              cursor: 'pointer'
+            }}
+          >
+            <KeyRound size={12} color="var(--accent)" />
+            <span>Fill Demo</span>
+          </button>
         </div>
       </div>
 

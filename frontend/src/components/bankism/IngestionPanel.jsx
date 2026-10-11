@@ -1,26 +1,41 @@
-import React from 'react';
-import * as Icons from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  ShieldAlert,
+  Trash2,
+  Sparkles,
+  RotateCcw,
+  Send,
+  Loader2,
+  ChevronDown,
+  ShieldOff,
+  UserX,
+  FileText,
+  Binary,
+  EyeOff,
+  KeyRound,
+  TrendingUp,
+  Wallet,
+  ArrowUpRight,
+  History,
+  CreditCard,
+  CheckCircle2,
+  AlertTriangle
+} from 'lucide-react';
 import { ATTACK_PRESETS, BENIGN_PRESETS } from './constants';
 
-function PresetCard({ preset, variant, onClick }) {
-  const Icon = Icons[preset.icon] || Icons.Circle;
-
-  return (
-    <button
-      type="button"
-      className={`preset-card variant-${variant}`}
-      onClick={() => onClick(preset)}
-    >
-      <span className="preset-icon">
-        <Icon size={16} strokeWidth={2} />
-      </span>
-      <span className="preset-text">
-        <span className="preset-name">{preset.label}</span>
-        <span className="preset-desc">{preset.desc}</span>
-      </span>
-    </button>
-  );
-}
+const ICON_MAP = {
+  ShieldOff: ShieldOff,
+  Drama: UserX,
+  FileText: FileText,
+  Binary: Binary,
+  EyeOff: EyeOff,
+  KeyRound: KeyRound,
+  TrendingUp: TrendingUp,
+  Wallet: Wallet,
+  Send: ArrowUpRight,
+  History: History,
+  CreditCard: CreditCard,
+};
 
 export default function IngestionPanel({
   prompt,
@@ -34,8 +49,12 @@ export default function IngestionPanel({
   loading,
   onSubmit,
   onPreset,
+  onClear,
   normalizedPreview,
 }) {
+  const [selectedPresetId, setSelectedPresetId] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -43,28 +62,80 @@ export default function IngestionPanel({
     }
   };
 
+  const handleSelectPreset = (p) => {
+    setSelectedPresetId(p.id);
+    setIsDropdownOpen(false);
+    onPreset(p);
+  };
+
+  const selectedPreset = [...ATTACK_PRESETS, ...BENIGN_PRESETS].find(p => p.id === selectedPresetId);
+
+  // 4 high-value quick presets with distinct Lucide icons
+  const quickPicks = [
+    { ...ATTACK_PRESETS[1], badge: 'DAN Jailbreak', color: '#f43f5e', LucideIcon: UserX },
+    { ...ATTACK_PRESETS[0], badge: 'Policy Override', color: '#f43f5e', LucideIcon: ShieldOff },
+    { ...ATTACK_PRESETS[2], badge: 'Memo Smuggling', color: '#f59e0b', LucideIcon: FileText },
+    { ...BENIGN_PRESETS[1], badge: 'Safe $120 Wire', color: '#10b981', LucideIcon: ArrowUpRight },
+  ];
+
   return (
     <section className="card ingestion">
-      <header className="card-header">
+      {/* Header with Title and Clear Form */}
+      <header className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="card-title">
-          <Icons.Inbox size={18} />
+          <ShieldAlert size={18} color="var(--accent)" />
           <h2>Untrusted Request Ingestion</h2>
         </div>
-        <span className="card-meta">Raw ingress</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {(prompt || amount || recipient || memo) && (
+            <button
+              type="button"
+              onClick={() => { onClear(); setSelectedPresetId(''); }}
+              className="btn-ghost sm"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                color: 'var(--blocked)',
+                borderColor: 'rgba(244, 63, 94, 0.25)',
+                padding: '4px 10px',
+                fontSize: '11.5px',
+                fontWeight: 600
+              }}
+              title="Clear all inputs"
+            >
+              <Trash2 size={13} />
+              <span>Clear Form</span>
+            </button>
+          )}
+          <span className="card-meta">Raw ingress</span>
+        </div>
       </header>
 
       <div className="card-body">
+        {/* Input Form */}
         <form onSubmit={onSubmit} className="intake-form">
           <div className="field">
-            <label htmlFor="prompt" className="field-label">
+            <div className="field-label">
               <span>Natural language request</span>
-              <span className="char-count">{prompt.length} chars</span>
-            </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="char-count">{prompt.length} chars</span>
+                {prompt && (
+                  <button
+                    type="button"
+                    onClick={() => setPrompt('')}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '11px' }}
+                  >
+                    Clear text
+                  </button>
+                )}
+              </div>
+            </div>
             <textarea
               id="prompt"
               className="input mono"
               rows={4}
-              placeholder="Enter a banking request..."
+              placeholder="Type a natural language command or select a preset below..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -102,8 +173,8 @@ export default function IngestionPanel({
 
           <div className="field">
             <label htmlFor="memo" className="field-label">
-              <span>Memo</span>
-              <span className="field-hint">Common target for indirect injection</span>
+              <span>Payment Memo</span>
+              <span className="field-hint">Scanned by Layer 6 Deep Memo Guard</span>
             </label>
             <input
               id="memo"
@@ -122,56 +193,230 @@ export default function IngestionPanel({
             </code>
           </div>
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading || !prompt.trim()}
-          >
-            {loading ? (
-              <>
-                <Icons.Loader2 size={16} className="spin" />
-                <span>Analyzing Request...</span>
-              </>
-            ) : (
-              <>
-                <Icons.Send size={16} />
-                <span>Analyze Request</span>
-              </>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{ flex: 1 }}
+              disabled={loading || !prompt.trim()}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={16} className="spin" />
+                  <span>Analyzing Through L1–L7 Pipeline...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={16} />
+                  <span>Execute & Analyze Request</span>
+                </>
+              )}
+            </button>
+
+            {(prompt || amount || recipient || memo) && (
+              <button
+                type="button"
+                onClick={() => { onClear(); setSelectedPresetId(''); }}
+                className="btn-ghost"
+                style={{ padding: '0 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                title="Clear all fields"
+              >
+                <RotateCcw size={15} />
+                <span>Clear</span>
+              </button>
             )}
-          </button>
+          </div>
         </form>
 
-        <div className="preset-section">
-          <div className="section-label">
-            <span className="dot dot-blocked" />
-            Adversarial vectors
-          </div>
-          <div className="preset-grid">
-            {ATTACK_PRESETS.map((p) => (
-              <PresetCard
-                key={p.id}
-                preset={p}
-                variant="attack"
-                onClick={onPreset}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Clean, Visible Testcase Selector Section with Lucide Icons */}
+        <div style={{
+          marginTop: '24px',
+          paddingTop: '20px',
+          borderTop: '1px solid var(--border)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
+          position: 'relative'
+        }}>
+          {/* Header Row: Label + Custom Lucide Dropdown */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Sparkles size={16} color="var(--accent)" />
+              <span style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                Test Scenarios & Presets
+              </span>
+            </div>
 
-        <div className="preset-section">
-          <div className="section-label">
-            <span className="dot dot-approved" />
-            Legitimate requests
+            {/* Custom Styled Dropdown Button */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  padding: '7px 12px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-raised)',
+                  border: '1px solid var(--border-strong)',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer'
+                }}
+              >
+                <span>{selectedPreset ? selectedPreset.label : `All Scenarios (${ATTACK_PRESETS.length + BENIGN_PRESETS.length})`}</span>
+                <ChevronDown size={14} color="var(--text-muted)" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              </button>
+
+              {/* Custom Lucide Dropdown Popover */}
+              {isDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 'calc(100% + 6px)',
+                  width: '300px',
+                  maxHeight: '340px',
+                  overflowY: 'auto',
+                  background: 'var(--bg-panel)',
+                  border: '1px solid var(--border-strong)',
+                  borderRadius: '12px',
+                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.65)',
+                  backdropFilter: 'blur(20px)',
+                  zIndex: 50,
+                  padding: '8px'
+                }}>
+                  {/* Attack Presets Group */}
+                  <div style={{ padding: '6px 10px', fontSize: '11px', fontWeight: 700, color: 'var(--blocked)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ShieldAlert size={13} />
+                    <span>Adversarial Attacks</span>
+                  </div>
+                  {ATTACK_PRESETS.map((p) => {
+                    const PresetIcon = ICON_MAP[p.icon] || ShieldOff;
+                    const isSelected = selectedPresetId === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSelectPreset(p)}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: isSelected ? 'var(--blocked-soft)' : 'transparent',
+                          color: isSelected ? 'var(--blocked)' : 'var(--text-primary)',
+                          fontSize: '12.5px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s'
+                        }}
+                      >
+                        <PresetIcon size={14} color="var(--blocked)" />
+                        <span style={{ fontWeight: isSelected ? 700 : 500 }}>{p.label}</span>
+                      </button>
+                    );
+                  })}
+
+                  {/* Legitimate Presets Group */}
+                  <div style={{ padding: '10px 10px 6px', fontSize: '11px', fontWeight: 700, color: 'var(--approved)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '6px', borderTop: '1px solid var(--border)', marginTop: '6px' }}>
+                    <CheckCircle2 size={13} />
+                    <span>Legitimate Banking Requests</span>
+                  </div>
+                  {BENIGN_PRESETS.map((p) => {
+                    const PresetIcon = ICON_MAP[p.icon] || ArrowUpRight;
+                    const isSelected = selectedPresetId === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleSelectPreset(p)}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: isSelected ? 'var(--approved-soft)' : 'transparent',
+                          color: isSelected ? 'var(--approved)' : 'var(--text-primary)',
+                          fontSize: '12.5px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s'
+                        }}
+                      >
+                        <PresetIcon size={14} color="var(--approved)" />
+                        <span style={{ fontWeight: isSelected ? 700 : 500 }}>{p.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="preset-grid">
-            {BENIGN_PRESETS.map((p) => (
-              <PresetCard
-                key={p.id}
-                preset={p}
-                variant="benign"
-                onClick={onPreset}
-              />
-            ))}
+
+          {/* Quick-Pick 1-Click Cards Grid with Lucide Icons */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: '10px'
+          }}>
+            {quickPicks.map((p) => {
+              const isSelected = selectedPresetId === p.id;
+              const CardIcon = p.LucideIcon;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handleSelectPreset(p)}
+                  style={{
+                    background: isSelected ? 'var(--bg-panel)' : 'var(--bg-input)',
+                    border: `1px solid ${isSelected ? p.color : 'var(--border)'}`,
+                    borderRadius: '10px',
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    boxShadow: isSelected ? `0 0 14px ${p.color}33` : 'none',
+                    transition: 'all 0.2s',
+                    position: 'relative'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      padding: '2px 7px',
+                      borderRadius: '4px',
+                      background: `${p.color}20`,
+                      color: p.color
+                    }}>
+                      <CardIcon size={11} color={p.color} />
+                      <span>{p.badge}</span>
+                    </span>
+                    <span style={{ fontSize: '11px', color: 'var(--accent)', fontWeight: 600 }}>Load &rarr;</span>
+                  </div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px' }}>
+                    {p.label}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.desc}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

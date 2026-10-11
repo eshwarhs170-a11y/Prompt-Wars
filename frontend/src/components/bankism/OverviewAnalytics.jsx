@@ -62,11 +62,11 @@ export default function OverviewAnalytics({ bankState, onNavigateTab }) {
         gap: '24px'
       }}>
         
-        {/* Card 1: Circular Visual Score Gauge */}
-        <div className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        {/* Card 1: Circular Visual Score Gauge with Cyber Scan Effect */}
+        <div className="card cyber-scan-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShieldCheck size={18} color="var(--accent)" />
+              <div className="pulse-ring" style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--approved)' }} />
               <h3 style={{ fontSize: '15px', fontWeight: 700, margin: 0 }}>Firewall Health Index</h3>
             </div>
             <span className="chip mono chip-approved" style={{ fontSize: '11px' }}>

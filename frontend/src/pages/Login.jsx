@@ -116,8 +116,8 @@ export default function Login({ onLogin, theme, toggleTheme }) {
         </button>
       </div>
 
-      {/* 3D Glassmorphism Login Container */}
-      <div style={{
+      {/* 3D Glassmorphism Login Container with Cyber Scanning Effect */}
+      <div className="float-3d cyber-scan-glow" style={{
         width: '100%',
         maxWidth: '440px',
         padding: '40px 36px',

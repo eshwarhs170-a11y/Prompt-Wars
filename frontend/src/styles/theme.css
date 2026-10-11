@@ -237,25 +237,99 @@ body::after {
   transform: rotate(15deg) scale(1.05);
 }
 
-/* ─── Premium Glassmorphism & Shimmer Effects ─── */
-.card, .stat-card, .preset-card {
+/* ─── Premium Glassmorphism & 3D Interactive Depth ─── */
+.card, .stat-card {
   position: relative;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   border: 1px solid var(--border) !important;
   background: var(--bg-panel) !important;
-  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
 }
 
 .card:hover, .stat-card:hover {
+  transform: translateY(-4px) perspective(1000px) rotateX(1deg);
   border-color: var(--border-strong) !important;
-  box-shadow: 0 20px 44px -10px rgba(0, 0, 0, 0.7), 0 0 24px rgba(99, 102, 241, 0.15) !important;
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75), 0 0 30px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* 3D Floating Cyber Elements */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(8px) rotate(-1deg); }
+}
+
+.float-3d {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.float-3d-alt {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+/* Neon Cyber Scanning Beam Effect */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.cyber-scan-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-scan-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 14px var(--accent);
+  opacity: 0.5;
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Animated Gradient Flow Border */
+@keyframes gradientBorder {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-border-card {
+  position: relative;
+  background: var(--bg-panel);
+  border-radius: var(--radius-panel);
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(244, 63, 94, 0.2), rgba(16, 185, 129, 0.3), rgba(139, 92, 246, 0.4));
+  background-size: 300% 300%;
+  animation: gradientBorder 8s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Subtle Shimmer Ray */
 @keyframes shimmerPass {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
+  0% { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(250%) skewX(-20deg); }
 }
 
 .shimmer-edge {
@@ -268,11 +342,10 @@ body::after {
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
+  width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-  transform: skewX(-20deg);
-  animation: shimmerPass 6s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: shimmerPass 5s infinite cubic-bezier(0.4, 0, 0.6, 1);
   pointer-events: none;
 }
 
@@ -308,12 +381,12 @@ body::after {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 999px;
   transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--accent);
 }
 

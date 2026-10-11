@@ -19,20 +19,22 @@ export default function LedgerView({ account, transactions = [] }) {
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
         gap: '24px'
       }}>
-        {/* Holographic Digital Debit Card Mockup */}
-        <div style={{
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%)',
+        {/* Holographic Digital Debit Card Mockup with 3D Float & Shimmer */}
+        <div className="shimmer-edge float-3d" style={{
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 35%, #4338ca 70%, #6366f1 100%)',
           borderRadius: '20px',
           padding: '28px',
           color: '#ffffff',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 20px 40px -10px rgba(67, 56, 202, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 25px 50px -12px rgba(67, 56, 202, 0.5), 0 0 35px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          minHeight: '210px'
+          minHeight: '210px',
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.3s ease'
         }}>
           {/* Card Chip & Network */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

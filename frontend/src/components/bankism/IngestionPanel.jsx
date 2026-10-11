@@ -270,21 +270,21 @@ export default function IngestionPanel({
                 <ChevronDown size={14} color="var(--text-muted)" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </button>
 
-              {/* Custom Lucide Dropdown Popover */}
+              {/* Custom Lucide Dropdown Popover (opens downward) */}
               {isDropdownOpen && (
                 <div style={{
                   position: 'absolute',
                   right: 0,
-                  bottom: 'calc(100% + 6px)',
+                  top: 'calc(100% + 6px)',
                   width: '300px',
                   maxHeight: '340px',
                   overflowY: 'auto',
                   background: 'var(--bg-panel)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
-                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.65)',
+                  boxShadow: '0 18px 40px rgba(0, 0, 0, 0.65)',
                   backdropFilter: 'blur(20px)',
-                  zIndex: 50,
+                  zIndex: 100,
                   padding: '8px'
                 }}>
                   {/* Attack Presets Group */}

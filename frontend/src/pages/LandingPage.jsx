@@ -171,8 +171,8 @@ export default function LandingPage({ theme, toggleTheme, isAuthenticated }) {
           </button>
         </div>
 
-        {/* Live Firewall Demo Preview Mockup */}
-        <div className="preview-mockup" id="demo">
+        {/* Live Firewall Demo Preview Mockup with 3D Cyber Scan */}
+        <div className="preview-mockup cyber-scan-glow shimmer-edge" id="demo">
           <div className="mockup-header">
             <span className="mockup-dot red" />
             <span className="mockup-dot amber" />

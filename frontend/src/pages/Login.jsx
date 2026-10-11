@@ -94,12 +94,12 @@ export default function Login({ onLogin, theme, toggleTheme }) {
             height: '64px',
             margin: '0 auto 16px',
             borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(2, 132, 199, 0.4))',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.45))',
             display: 'grid',
             placeItems: 'center',
             color: 'var(--accent)',
-            border: '1px solid rgba(34, 211, 238, 0.35)',
-            boxShadow: '0 0 30px var(--accent-glow)'
+            border: '1px solid var(--border-strong)',
+            boxShadow: '0 0 35px var(--accent-glow)'
           }}>
             <ShieldCheck size={36} strokeWidth={2.4} />
           </div>

@@ -239,44 +239,18 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
           {activeTab === 'rules' && <RulesView />}
         </div>
 
-        {/* Enterprise SOC Console Dock Footer */}
+        {/* Console Footer */}
         <footer className="dashboard-console-footer">
           <div className="dashboard-footer-status">
             <span className="pulse-dot" />
-            <span>L1–L7 SENTINEL FIREWALL ENGINE: ACTIVE</span>
+            <span>L1–L7 Firewall Active &bull; Prompt-Wars x UVCE</span>
           </div>
-
-          <div className="dashboard-footer-metrics">
-            <span>GATEWAY CEILING: <strong>$10,000.00</strong></span>
-            <span>LEDGER: <strong>ACC-882194</strong></span>
-            <span>RUNTIME: <strong>Node / Express v2.4.0</strong></span>
-          </div>
-
-          <div className="dashboard-footer-links">
-            <button 
-              className="dashboard-footer-btn"
-              onClick={() => setActiveTab('rules')}
-              title="Inspect L1-L7 Security Rules"
-            >
-              Security Rules
-            </button>
-            <span>&bull;</span>
-            <button 
-              className="dashboard-footer-btn"
-              onClick={() => setActiveTab('flow')}
-              title="Inspect Blue-Team Prompt Pipeline"
-            >
-              Prompt Flow
-            </button>
-            <span>&bull;</span>
-            <button 
-              className="dashboard-footer-btn"
-              onClick={() => navigate('/')}
-              title="View Public Architecture Landing Page"
-            >
-              Landing Page &rarr;
-            </button>
-          </div>
+          <button 
+            className="dashboard-footer-btn"
+            onClick={() => navigate('/')}
+          >
+            Back to Home &rarr;
+          </button>
         </footer>
       </main>
     </div>

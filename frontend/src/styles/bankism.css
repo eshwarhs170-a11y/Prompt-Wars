@@ -1,56 +1,55 @@
 /* ============ DESIGN TOKENS ============ */
 :root {
-  --bg-base: #070B14;
-  --bg-panel: #0C1322;
-  --bg-raised: #111A2E;
-  --bg-input: #0A1020;
-  
-  --border: rgba(148, 163, 184, 0.12);
-  --border-strong: rgba(148, 163, 184, 0.22);
-  
-  --text-primary: #E2E8F0;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  
-  --accent: #22D3EE;
-  --accent-soft: rgba(34, 211, 238, 0.12);
-  
-  --approved: #22C55E;
-  --approved-soft: rgba(34, 197, 94, 0.12);
-  
-  --blocked: #F43F5E;
+  --bg-base: #0a0d14;
+  --bg-panel: rgba(14, 19, 32, 0.72);
+  --bg-raised: rgba(20, 27, 45, 0.82);
+  --bg-input: rgba(11, 15, 26, 0.85);
+
+  --border: rgba(99, 102, 241, 0.14);
+  --border-strong: rgba(129, 140, 248, 0.32);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.12);
+  --accent-glow: rgba(99, 102, 241, 0.35);
+
+  --approved: #10b981;
+  --approved-soft: rgba(16, 185, 129, 0.12);
+  --approved-glow: rgba(16, 185, 129, 0.35);
+
+  --blocked: #f43f5e;
   --blocked-soft: rgba(244, 63, 94, 0.12);
-  
-  --review: #F59E0B;
+  --blocked-glow: rgba(244, 63, 94, 0.35);
+
+  --review: #f59e0b;
   --review-soft: rgba(245, 158, 11, 0.12);
-  
+
   --radius-panel: 14px;
   --radius-control: 10px;
-  
-  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --card-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+
+  --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ============ RESET & BASE ============ */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body, #root {
-  min-height: 100%;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { min-height: 100%; }
 
 body {
-  background: radial-gradient(1000px 480px at 50% -12%, rgba(34, 211, 238, 0.08), transparent 75%), var(--bg-base);
+  background-color: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-ui);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
+
 
 button, input, textarea, select {
   font: inherit;

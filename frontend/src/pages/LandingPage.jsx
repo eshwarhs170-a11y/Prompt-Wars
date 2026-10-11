@@ -452,106 +452,49 @@ export default function LandingPage({ theme, toggleTheme, isAuthenticated }) {
         </div>
       </div>
 
-      {/* Full-Featured Corporate Footer */}
+      {/* Simple Clean Footer */}
       <footer className="landing-footer-full">
-        <div className="footer-top-grid">
-          {/* Col 1: Brand & Mission */}
-          <div className="footer-brand-col">
-            <div className="footer-brand-title">
-              <div className="brand-mark" style={{ width: '32px', height: '32px' }}>
-                <ShieldCheck size={20} strokeWidth={2.4} />
-              </div>
-              <span>BANKISM // BLUE-TEAM</span>
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: '32px',
+          borderBottom: '1px solid var(--border)',
+          flexWrap: 'wrap',
+          gap: '24px'
+        }}>
+          {/* Brand */}
+          <div className="footer-brand-title">
+            <div className="brand-mark" style={{ width: '30px', height: '30px' }}>
+              <ShieldCheck size={18} strokeWidth={2.4} />
             </div>
-            <p className="footer-brand-desc">
-              Deterministic, Blue-Team AI Firewall guarding core banking systems against adversarial prompt injections, policy overrides, and indirect memo attacks.
-            </p>
-            <div className="footer-badge-pill">
-              <span className="pulse-dot" />
-              <span>DEFENSE MATRIX: L1-L7 OPERATIONAL</span>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-primary)' }}>Bankism</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px' }}>Blue-Team AI Firewall &bull; Prompt-Wars x UVCE</div>
             </div>
           </div>
 
-          {/* Col 2: Navigation Links */}
-          <div>
-            <div className="footer-col-title">Platform & Architecture</div>
-            <ul className="footer-links-list">
-              <li><a href="#pipeline" className="footer-link-item">How It Works</a></li>
-              <li><a href="#features" className="footer-link-item">Defense Architecture</a></li>
-              <li><a href="#demo" className="footer-link-item">Live Threat Matrix</a></li>
-              <li><a href="#faq" className="footer-link-item">Technical FAQ</a></li>
-              <li><a href="#specs" className="footer-link-item">L1–L7 Specifications</a></li>
-              <li>
-                <button 
-                  onClick={handleEnterApp} 
-                  className="footer-link-item"
-                  style={{ background: 'none', border: 'none', padding: 0 }}
-                >
-                  Sentinel Console
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Prompt Engineering Architecture */}
-          <div>
-            <div className="footer-col-title">Handbook Prompts</div>
-            <ul className="footer-links-list">
-              <li><span className="footer-link-item"><FileCode size={13} /> intent-extractor.md</span></li>
-              <li><span className="footer-link-item"><FileCode size={13} /> injection-classifier.md</span></li>
-              <li><span className="footer-link-item"><FileCode size={13} /> memo-scanner.md</span></li>
-              <li><span className="footer-link-item"><FileCode size={13} /> policy.md</span></li>
-              <li><span className="footer-link-item"><FileCode size={13} /> output-schema.md</span></li>
-              <li><span className="footer-link-item"><FileCode size={13} /> attack-corpus.md</span></li>
-            </ul>
-          </div>
-
-          {/* Col 4: Hackathon / Competition Information */}
-          <div>
-            <div className="footer-col-title">Competition & Standards</div>
-            <ul className="footer-links-list">
-              <li><span className="footer-link-item">Prompt-Wars x UVCE</span></li>
-              <li><span className="footer-link-item">Blue-Team Sentinel Track</span></li>
-              <li><span className="footer-link-item">OWASP GenAI Benchmark</span></li>
-              <li><span className="footer-link-item">Zero-Trust Financial Gate</span></li>
-              <li>
-                <button 
-                  onClick={() => navigate('/login')} 
-                  className="footer-link-item"
-                  style={{ color: 'var(--accent)', background: 'none', border: 'none', padding: 0, fontWeight: 600 }}
-                >
-                  Operator Sign In &rarr;
-                </button>
-              </li>
-            </ul>
+          {/* Nav links */}
+          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+            <a href="#pipeline" className="footer-link-item">How It Works</a>
+            <a href="#features" className="footer-link-item">Architecture</a>
+            <a href="#demo" className="footer-link-item">Live Demo</a>
+            <a href="#faq" className="footer-link-item">FAQ</a>
+            <button onClick={handleEnterApp} className="footer-link-item" style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600 }}>
+              Launch Console &rarr;
+            </button>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="footer-bottom-bar">
-          <div>
-            &copy; 2026 Bankism AI Security. Built for Prompt-Wars Hackathon.
-          </div>
-
-          <div className="footer-legal-links">
-            <span className="footer-legal-link">Privacy Policy</span>
-            <span>&bull;</span>
-            <span className="footer-legal-link">Terms of Service</span>
-            <span>&bull;</span>
-            <span className="footer-legal-link">Responsible Disclosure</span>
-          </div>
-
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <span className="mono small">API v2.4.0-enterprise</span>
-            <button 
-              className="scroll-top-btn"
-              onClick={scrollToTop}
-              title="Back to Top"
-            >
-              <span>Back to Top</span>
-              <ArrowUp size={13} />
-            </button>
-          </div>
+        {/* Bottom bar */}
+        <div className="footer-bottom-bar" style={{ paddingTop: '20px' }}>
+          <span>&copy; 2026 Bankism &bull; Prompt-Wars x UVCE Hackathon</span>
+          <button className="scroll-top-btn" onClick={scrollToTop}>
+            <span>Back to Top</span>
+            <ArrowUp size={13} />
+          </button>
         </div>
       </footer>
     </div>

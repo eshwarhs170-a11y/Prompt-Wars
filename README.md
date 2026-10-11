@@ -1,6 +1,14 @@
-# Bankism: Blue-Team AI Defensive Firewall & Guardrail Gateway
+# 🏦 Bankism: Blue-Team AI Defensive Firewall & Guardrail Gateway
 
-> **Prompt-Wars Competition Submission**  
+> **Autonomous AI Financial Guardrail Gateway** — Layered Defense-in-Depth AI Firewall protecting conversational banking cores against adversarial jailbreaks, prompt injection, secondary memo smuggling, token obfuscation, and unauthorized ledger mutations.
+
+[![Tests](https://img.shields.io/badge/tests-16%20passed-black?style=for-the-badge&logo=vitest&logoColor=white)](./backend/test.js)
+[![Adversarial Recall](https://img.shields.io/badge/Adversarial%20Recall-100%25-black?style=for-the-badge&logo=shield&logoColor=10B981)](./prompts/attack-corpus.md)
+[![False Positive Rate](https://img.shields.io/badge/False%20Positive%20Rate-0%25-black?style=for-the-badge&logo=checkmarx&logoColor=10B981)](./backend/test.js)
+[![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge)](./README.md)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel%20Edge-black?style=for-the-badge&logo=vercel&logoColor=white)](https://bankism-gold.vercel.app/)
+
+> **Prompt-Wars x UVCE Competition Submission**  
 > **Vertical:** Financial Services & Core Banking Security  
 > **Live Web Demo:** [https://bankism-gold.vercel.app/](https://bankism-gold.vercel.app/)  
 > **Repository:** Public · Single Branch (`main`) · Size: < 1 MB  

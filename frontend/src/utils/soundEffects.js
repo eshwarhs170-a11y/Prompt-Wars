@@ -1,5 +1,5 @@
 // High-tech Web Audio API Synthesized Sound System
-// Pure browser synthesis - 0 external asset dependencies, zero latency
+// Pure browser synthesis - 0 external asset dependencies
 
 let audioCtx = null;
 let isMuted = false;
@@ -12,10 +12,21 @@ function getAudioContext() {
       audioCtx = new AudioContextClass();
     }
   }
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
   return audioCtx;
+}
+
+// ALWAYS call this before playing any sound after user interaction
+async function unlockAndGetCtx() {
+  const ctx = getAudioContext();
+  if (!ctx) return null;
+  if (ctx.state === 'suspended') {
+    try {
+      await ctx.resume();
+    } catch (e) {
+      console.warn('Audio resume failed:', e);
+    }
+  }
+  return ctx;
 }
 
 export const getSoundMuted = () => isMuted;
@@ -32,51 +43,86 @@ if (typeof window !== 'undefined') {
   isMuted = localStorage.getItem('bankism_sound_muted') === 'true';
 }
 
+// Pre-warm the AudioContext on first user interaction
+if (typeof window !== 'undefined') {
+  const warmUp = () => {
+    unlockAndGetCtx().then((ctx) => {
+      if (!ctx) return;
+      // Play a completely silent buffer to unlock the context
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    });
+    ['click', 'keydown', 'touchstart'].forEach((ev) =>
+      document.removeEventListener(ev, warmUp)
+    );
+  };
+  ['click', 'keydown', 'touchstart'].forEach((ev) =>
+    document.addEventListener(ev, warmUp, { once: true })
+  );
+}
+
 /**
  * Play Cyber Threat / Adversarial Attack Sound
- * High-urgency futuristic defense alert (dual-tone cyber klaxon warning)
+ * Urgent multi-pulse klaxon — LOUD and unmissable
  */
-export function playThreatAlertSound() {
+export async function playThreatAlertSound() {
   if (isMuted) return;
   try {
-    const ctx = getAudioContext();
+    const ctx = await unlockAndGetCtx();
     if (!ctx) return;
 
     const now = ctx.currentTime;
 
-    // Pulse 1: Cyber warning pulse
-    [0, 0.12].forEach((offset) => {
+    // Master gain node for overall volume (high volume)
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.5, now);
+    masterGain.connect(ctx.destination);
+
+    // 3 rapid klaxon pulses
+    [0, 0.18, 0.36].forEach((offset) => {
+      // Main oscillator — sawtooth pitch-drop
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-
       osc.type = 'sawtooth';
-      // Pitch drop from 480Hz down to 180Hz (classic cyber security alert drop)
-      osc.frequency.setValueAtTime(480, now + offset);
-      osc.frequency.exponentialRampToValueAtTime(160, now + offset + 0.1);
-
-      gain.gain.setValueAtTime(0.18, now + offset);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.11);
-
+      osc.frequency.setValueAtTime(580, now + offset);
+      osc.frequency.exponentialRampToValueAtTime(180, now + offset + 0.15);
+      gain.gain.setValueAtTime(0.7, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
       osc.connect(gain);
-      gain.connect(ctx.destination);
-
+      gain.connect(masterGain);
       osc.start(now + offset);
-      osc.stop(now + offset + 0.12);
+      osc.stop(now + offset + 0.17);
+
+      // Square wave layer for punch
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(290, now + offset);
+      osc2.frequency.exponentialRampToValueAtTime(90, now + offset + 0.15);
+      gain2.gain.setValueAtTime(0.4, now + offset);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
+      osc2.connect(gain2);
+      gain2.connect(masterGain);
+      osc2.start(now + offset);
+      osc2.stop(now + offset + 0.17);
     });
 
-    // Sub-bass heavy impact thump
+    // Deep sub-bass impact
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(120, now);
-    subOsc.frequency.exponentialRampToValueAtTime(40, now + 0.28);
-    subGain.gain.setValueAtTime(0.25, now);
-    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-
+    subOsc.frequency.setValueAtTime(140, now);
+    subOsc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+    subGain.gain.setValueAtTime(0.8, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
     subOsc.connect(subGain);
-    subGain.connect(ctx.destination);
+    subGain.connect(masterGain);
     subOsc.start(now);
-    subOsc.stop(now + 0.3);
+    subOsc.stop(now + 0.5);
+
   } catch (err) {
     console.warn('Audio playback error:', err);
   }
@@ -84,21 +130,27 @@ export function playThreatAlertSound() {
 
 /**
  * Play Legitimate Request Success Chime
- * Crystalline harmonic triad chime (Authorized / Funds Cleared)
+ * Crisp harmonic approval chime — clear and pleasant
  */
-export function playSuccessChime() {
+export async function playSuccessChime() {
   if (isMuted) return;
   try {
-    const ctx = getAudioContext();
+    const ctx = await unlockAndGetCtx();
     if (!ctx) return;
 
     const now = ctx.currentTime;
-    // Harmonic Major Triad: C5 (523.25), E5 (659.25), G5 (783.99), C6 (1046.5)
+
+    // Master gain
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.5, now);
+    masterGain.connect(ctx.destination);
+
+    // Harmonic Major Triad: C5, E5, G5, C6 — ascending arpeggio
     const notes = [
-      { freq: 523.25, time: 0.00, dur: 0.35, gain: 0.12 },
-      { freq: 659.25, time: 0.07, dur: 0.38, gain: 0.14 },
-      { freq: 783.99, time: 0.14, dur: 0.45, gain: 0.15 },
-      { freq: 1046.5, time: 0.22, dur: 0.55, gain: 0.16 },
+      { freq: 523.25, time: 0.00, dur: 0.5,  gain: 0.55 },
+      { freq: 659.25, time: 0.09, dur: 0.55, gain: 0.60 },
+      { freq: 783.99, time: 0.18, dur: 0.6,  gain: 0.65 },
+      { freq: 1046.5, time: 0.28, dur: 0.75, gain: 0.70 },
     ];
 
     notes.forEach(({ freq, time, dur, gain: noteGain }) => {
@@ -108,16 +160,40 @@ export function playSuccessChime() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now + time);
 
+      // Add slight vibrato
+      const vibratoOsc = ctx.createOscillator();
+      const vibratoGain = ctx.createGain();
+      vibratoOsc.frequency.setValueAtTime(5, now + time);
+      vibratoGain.gain.setValueAtTime(3, now + time);
+      vibratoOsc.connect(vibratoGain);
+      vibratoGain.connect(osc.frequency);
+      vibratoOsc.start(now + time);
+      vibratoOsc.stop(now + time + dur);
+
       gain.gain.setValueAtTime(0.001, now + time);
-      gain.gain.linearRampToValueAtTime(noteGain, now + time + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + time + dur);
+      gain.gain.linearRampToValueAtTime(noteGain, now + time + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + time + dur);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(masterGain);
 
       osc.start(now + time);
       osc.stop(now + time + dur);
     });
+
+    // Harmonic overtone shimmer
+    const shimmerOsc = ctx.createOscillator();
+    const shimmerGain = ctx.createGain();
+    shimmerOsc.type = 'sine';
+    shimmerOsc.frequency.setValueAtTime(2093, now + 0.28); // C7
+    shimmerGain.gain.setValueAtTime(0.001, now + 0.28);
+    shimmerGain.gain.linearRampToValueAtTime(0.25, now + 0.32);
+    shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+    shimmerOsc.connect(shimmerGain);
+    shimmerGain.connect(masterGain);
+    shimmerOsc.start(now + 0.28);
+    shimmerOsc.stop(now + 0.9);
+
   } catch (err) {
     console.warn('Audio playback error:', err);
   }

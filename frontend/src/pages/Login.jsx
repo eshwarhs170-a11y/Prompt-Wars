@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, User, ArrowRight, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Lock, User, ArrowRight, Sun, Moon, ArrowLeft } from 'lucide-react';
 import '../styles/theme.css';
 
 export default function Login({ onLogin, theme, toggleTheme }) {
@@ -39,14 +39,32 @@ export default function Login({ onLogin, theme, toggleTheme }) {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px',
       position: 'relative',
       background: 'var(--bg-base)'
     }}>
-      {/* Top Controls */}
-      <div style={{ position: 'absolute', top: '24px', right: '32px', display: 'flex', gap: '12px' }}>
+      {/* Top Controls: Back to Home & Theme Toggle */}
+      <div style={{ 
+        position: 'absolute', 
+        top: '24px', 
+        left: '24px', 
+        right: '24px', 
+        display: 'flex', 
+        justifyContent: 'space-between',
+        alignItems: 'center' 
+      }}>
+        <button 
+          onClick={() => navigate('/')}
+          className="nav-operator-btn"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+        >
+          <ArrowLeft size={15} />
+          <span>Back to Home</span>
+        </button>
+
         <button 
           onClick={toggleTheme}
           className="theme-toggle-btn"
@@ -144,6 +162,17 @@ export default function Login({ onLogin, theme, toggleTheme }) {
           Competition Sandbox Credentials: <code style={{ color: 'var(--accent)', background: 'var(--accent-soft)', padding: '2px 6px', borderRadius: '4px' }}>admin</code> / <code style={{ color: 'var(--accent)', background: 'var(--accent-soft)', padding: '2px 6px', borderRadius: '4px' }}>admin</code>
         </div>
       </div>
+
+      {/* Subtle Corporate Login Footer */}
+      <footer style={{
+        marginTop: '32px',
+        color: 'var(--text-muted)',
+        fontSize: '12px',
+        textAlign: 'center',
+        zIndex: 10
+      }}>
+        &copy; 2026 Bankism AI Security &bull; Blue-Team Sentinel Gateway &bull; Prompt-Wars x UVCE
+      </footer>
     </div>
   );
 }

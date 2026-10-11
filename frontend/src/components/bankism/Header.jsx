@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, RotateCcw, LogOut, Sun, Moon } from 'lucide-react';
+import '../../styles/header.css';
 
 export default function Header({ user, onReset, onLogout, theme, toggleTheme }) {
   const initials = (user?.username || 'SA')
@@ -43,12 +44,22 @@ export default function Header({ user, onReset, onLogout, theme, toggleTheme }) 
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
-        <button className="btn-ghost" onClick={onReset} title="Reset simulation">
+        {/* Reset Simulation Button */}
+        <button 
+          className="header-action-btn" 
+          onClick={onReset} 
+          title="Reset simulation ledger and logs"
+        >
           <RotateCcw size={14} />
           <span>Reset</span>
         </button>
 
-        <button className="btn-text" onClick={onLogout} title="Logout">
+        {/* Logout Button */}
+        <button 
+          className="header-action-btn logout" 
+          onClick={onLogout} 
+          title="Exit Sentinel Console"
+        >
           <LogOut size={14} />
           <span>Logout</span>
         </button>

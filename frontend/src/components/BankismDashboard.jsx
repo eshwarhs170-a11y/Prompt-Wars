@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Ban,
   CheckCircle2,
@@ -37,6 +38,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
   const [loading, setLoading] = useState(false);
   const [lastVerdict, setLastVerdict] = useState(null);
   const [executionResult, setExecutionResult] = useState(null);
+  const navigate = useNavigate();
 
   const [bankState, setBankState] = useState({
     account: {
@@ -64,7 +66,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     loadState();
     const id = setInterval(loadState, 6000);
     return () => clearInterval(id);
@@ -112,6 +114,14 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
     loadState();
   };
 
+  const handleUserLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    // Navigate cleanly back to the landing page
+    navigate('/');
+  };
+
   const serverNormalized = lastVerdict?.normalizedInput;
   const clientNormalized = prompt.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
   const normalizedPreview = serverNormalized || clientNormalized;
@@ -125,7 +135,7 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
       <Header 
         user={user} 
         onReset={handleReset} 
-        onLogout={onLogout}
+        onLogout={handleUserLogout}
         theme={theme}
         toggleTheme={toggleTheme}
       />
@@ -228,6 +238,46 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
 
           {activeTab === 'rules' && <RulesView />}
         </div>
+
+        {/* Enterprise SOC Console Dock Footer */}
+        <footer className="dashboard-console-footer">
+          <div className="dashboard-footer-status">
+            <span className="pulse-dot" />
+            <span>L1–L7 SENTINEL FIREWALL ENGINE: ACTIVE</span>
+          </div>
+
+          <div className="dashboard-footer-metrics">
+            <span>GATEWAY CEILING: <strong>$10,000.00</strong></span>
+            <span>LEDGER: <strong>ACC-882194</strong></span>
+            <span>RUNTIME: <strong>Node / Express v2.4.0</strong></span>
+          </div>
+
+          <div className="dashboard-footer-links">
+            <button 
+              className="dashboard-footer-btn"
+              onClick={() => setActiveTab('rules')}
+              title="Inspect L1-L7 Security Rules"
+            >
+              Security Rules
+            </button>
+            <span>&bull;</span>
+            <button 
+              className="dashboard-footer-btn"
+              onClick={() => setActiveTab('flow')}
+              title="Inspect Blue-Team Prompt Pipeline"
+            >
+              Prompt Flow
+            </button>
+            <span>&bull;</span>
+            <button 
+              className="dashboard-footer-btn"
+              onClick={() => navigate('/')}
+              title="View Public Architecture Landing Page"
+            >
+              Landing Page &rarr;
+            </button>
+          </div>
+        </footer>
       </main>
     </div>
   );

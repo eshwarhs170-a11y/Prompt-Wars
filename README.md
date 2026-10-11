@@ -2,6 +2,7 @@
 
 > **Prompt-Wars Competition Submission**  
 > **Vertical:** Financial Services & Core Banking Security  
+> **Live Web Demo:** [https://bankism-gold.vercel.app/](https://bankism-gold.vercel.app/)  
 > **Repository:** Public · Single Branch (`main`) · Size: < 1 MB  
 
 ---

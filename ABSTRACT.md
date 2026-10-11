@@ -4,6 +4,7 @@
 **Track / Vertical:** Financial Services & Core Banking Security (AI Guardrail Gateway)  
 **System Name:** Bankism Blue-Team Defensive AI Firewall (v2.4.0)  
 **Team / Participant:** Eshwar H S (`eshwarhs170-a11y`)  
+**Live Deployed URL:** https://bankism-gold.vercel.app/  
 **Repository:** https://github.com/eshwarhs170-a11y/Prompt-Wars  
 
 ---

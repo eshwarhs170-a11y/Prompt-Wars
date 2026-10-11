@@ -89,6 +89,17 @@ runTest('L6: Neutralizes smuggled secondary instructions in transaction memos', 
   assert.strictEqual(res.threatCategory, 'MEMO_MALICIOUS_INJECTION');
 });
 
+runTest('L6: Does NOT false-alarm on benign memos like "system maintenance fee"', () => {
+  const res = analyzeBankingRequest({
+    prompt: 'Pay annual fee',
+    amount: 35,
+    recipient: 'billing@bank.com',
+    memo: 'system maintenance fee Q4'
+  });
+  assert.strictEqual(res.approved, true);
+  assert.strictEqual(res.riskLevel, 'SAFE');
+});
+
 // 7. Deterministic Financial Boundary Enforcement
 runTest('L7: Blocks transaction exceeding $10,000 threshold ceiling', () => {
   const res = analyzeBankingRequest({

@@ -183,8 +183,11 @@ app.post('/api/firewall/intercept', (req, res) => {
     threatDetails: verdict.threatDetails || null
   };
 
-  // Record into audit ledger
+  // Record into audit ledger (capped at 100 entries for memory efficiency)
   state.auditLogs.unshift(logEntry);
+  if (state.auditLogs.length > 100) {
+    state.auditLogs = state.auditLogs.slice(0, 100);
+  }
 
   // If approved AND it was a financial transaction, execute state change!
   let executionResult = null;

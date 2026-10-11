@@ -265,7 +265,8 @@ function analyzeBankingRequest(requestData) {
   // Layer 6: Indirect Memo Scanner
   if (memo) {
     const memoNormalized = normalizeText(memo);
-    const memoInjection = /(?:system|ignore|bypass|execute|admin|transfer\s+to|eval|script)/i;
+    // Specifically target injection directives, avoiding false positives on legitimate memos like "system maintenance fee"
+    const memoInjection = /(?:system\s+(?:override|prompt|directive|bypass|command)|ignore\s+(?:all|rules|limits)|bypass\s+(?:limits|filters|firewall|auth)|execute\s+(?:order|script|payload|wire)|transfer\s+to\s+root|eval\s*\(|<script)/i;
     if (memoInjection.test(memoNormalized)) {
       return {
         approved: false,

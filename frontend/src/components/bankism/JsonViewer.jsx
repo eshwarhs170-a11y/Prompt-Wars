@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Copy, Check } from 'lucide-react';
 
 const TOKEN_RE = /("(?:\\.|[^"\\])*")(\s*:)?|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d+)?/g;
@@ -30,7 +30,8 @@ function highlight(json) {
 
 export default function JsonViewer({ data }) {
   const [copied, setCopied] = useState(false);
-  const text = JSON.stringify(data, null, 2);
+  const text = useMemo(() => JSON.stringify(data, null, 2), [data]);
+  const highlightedNodes = useMemo(() => highlight(text), [text]);
 
   const copy = async () => {
     try {
@@ -51,7 +52,7 @@ export default function JsonViewer({ data }) {
           <span>{copied ? 'Copied' : 'Copy'}</span>
         </button>
       </div>
-      <pre className="json-body">{highlight(text)}</pre>
+      <pre className="json-body">{highlightedNodes}</pre>
     </div>
   );
 }

@@ -12,12 +12,14 @@ import Header from './bankism/Header';
 import StatCard from './bankism/StatCard';
 import IngestionPanel from './bankism/IngestionPanel';
 import VerdictPanel from './bankism/VerdictPanel';
-import AuditTable from './bankism/AuditTable';
-import LedgerView from './bankism/LedgerView';
-import RulesView from './bankism/RulesView';
-import PromptFlowView from './bankism/PromptFlowView';
-import OverviewAnalytics from './bankism/OverviewAnalytics';
-import BenchmarkArena from './bankism/BenchmarkArena';
+
+// Lazy load secondary tabs so the Simulator loads instantly and initial bundle is lightweight
+const AuditTable = React.lazy(() => import('./bankism/AuditTable'));
+const LedgerView = React.lazy(() => import('./bankism/LedgerView'));
+const RulesView = React.lazy(() => import('./bankism/RulesView'));
+const PromptFlowView = React.lazy(() => import('./bankism/PromptFlowView'));
+const OverviewAnalytics = React.lazy(() => import('./bankism/OverviewAnalytics'));
+const BenchmarkArena = React.lazy(() => import('./bankism/BenchmarkArena'));
 import { BarChart3, Scale } from 'lucide-react';
 import { playThreatAlertSound, playSuccessChime } from '../utils/soundEffects';
 
@@ -71,8 +73,24 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
 
   React.useEffect(() => {
     loadState();
-    const id = setInterval(loadState, 6000);
-    return () => clearInterval(id);
+    // Only refresh in background if the tab is visible to conserve CPU/network
+    const id = setInterval(() => {
+      if (!document.hidden) {
+        loadState();
+      }
+    }, 8000);
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        loadState();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, []);
 
   const handleIntercept = async (e) => {
@@ -219,53 +237,60 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
 
         {/* Tab Content Panels */}
         <div className="tab-panel" key={activeTab}>
-          {activeTab === 'overview' && (
-            <OverviewAnalytics 
-              bankState={bankState} 
-              onNavigateTab={(tab) => setActiveTab(tab)} 
-            />
-          )}
-
-          {activeTab === 'firewall' && (
-            <div className="arena">
-              <IngestionPanel
-                prompt={prompt}
-                setPrompt={setPrompt}
-                amount={amount}
-                setAmount={setAmount}
-                recipient={recipient}
-                setRecipient={setRecipient}
-                memo={memo}
-                setMemo={setMemo}
-                loading={loading}
-                onSubmit={handleIntercept}
-                onPreset={applyPreset}
-                onClear={handleClear}
-                normalizedPreview={normalizedPreview}
-              />
-              <VerdictPanel
-                verdict={lastVerdict}
-                executionResult={executionResult}
-              />
+          <React.Suspense fallback={
+            <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'inline-block', width: '24px', height: '24px', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <div style={{ marginTop: '12px', fontSize: '13px', fontWeight: 600 }}>Loading Security Module...</div>
             </div>
-          )}
+          }>
+            {activeTab === 'overview' && (
+              <OverviewAnalytics 
+                bankState={bankState} 
+                onNavigateTab={(tab) => setActiveTab(tab)} 
+              />
+            )}
 
-          {activeTab === 'flow' && <PromptFlowView />}
+            {activeTab === 'firewall' && (
+              <div className="arena">
+                <IngestionPanel
+                  prompt={prompt}
+                  setPrompt={setPrompt}
+                  amount={amount}
+                  setAmount={setAmount}
+                  recipient={recipient}
+                  setRecipient={setRecipient}
+                  memo={memo}
+                  setMemo={setMemo}
+                  loading={loading}
+                  onSubmit={handleIntercept}
+                  onPreset={applyPreset}
+                  onClear={handleClear}
+                  normalizedPreview={normalizedPreview}
+                />
+                <VerdictPanel
+                  verdict={lastVerdict}
+                  executionResult={executionResult}
+                />
+              </div>
+            )}
 
-          {activeTab === 'audit' && (
-            <AuditTable logs={bankState.auditLogs || []} />
-          )}
+            {activeTab === 'flow' && <PromptFlowView />}
 
-          {activeTab === 'ledger' && (
-            <LedgerView
-              account={bankState.account}
-              transactions={bankState.recentTransactions || []}
-            />
-          )}
+            {activeTab === 'audit' && (
+              <AuditTable logs={bankState.auditLogs || []} />
+            )}
 
-          {activeTab === 'rules' && <RulesView />}
+            {activeTab === 'ledger' && (
+              <LedgerView
+                account={bankState.account}
+                transactions={bankState.recentTransactions || []}
+              />
+            )}
 
-          {activeTab === 'benchmark' && <BenchmarkArena />}
+            {activeTab === 'rules' && <RulesView />}
+
+            {activeTab === 'benchmark' && <BenchmarkArena />}
+          </React.Suspense>
         </div>
 
         {/* Console Footer */}

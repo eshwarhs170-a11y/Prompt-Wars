@@ -1,8 +1,16 @@
 import React from 'react';
-import * as Icons from 'lucide-react';
+import { Landmark, Ban, CheckCircle2, Lock, Circle } from 'lucide-react';
+
+const ICON_MAP = {
+  Landmark,
+  Ban,
+  CheckCircle2,
+  Lock,
+  Circle
+};
 
 export default function StatCard({ label, value, context, icon, tone = 'accent' }) {
-  const Icon = Icons[icon] || Icons.Circle;
+  const Icon = ICON_MAP[icon] || Circle;
 
   return (
     <div className="stat-card">

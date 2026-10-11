@@ -25,7 +25,44 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+// Production Security Headers & Defense Hardening
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+// High-throughput In-memory Rate Limiting (Protects against DoS / brute-force prompt injections)
+const RATE_LIMIT_WINDOW_MS = 60000;
+const MAX_REQUESTS_PER_WINDOW = 120;
+const IP_REQUEST_COUNTS = new Map();
+
+app.use((req, res, next) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const clientData = IP_REQUEST_COUNTS.get(clientIp) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+
+  if (now > clientData.resetAt) {
+    clientData.count = 0;
+    clientData.resetAt = now + RATE_LIMIT_WINDOW_MS;
+  }
+
+  clientData.count += 1;
+  IP_REQUEST_COUNTS.set(clientIp, clientData);
+
+  if (clientData.count > MAX_REQUESTS_PER_WINDOW) {
+    return res.status(429).json({
+      error: 'Rate limit exceeded',
+      message: 'Too many requests. Protective gateway backoff initiated.'
+    });
+  }
+  next();
+});
+
+app.use(express.json({ limit: '100kb' }));
 
 // In-memory Ledger & Audit Logs for Real-time Simulation
 const state = {

@@ -19,7 +19,6 @@ import {
   History,
   CreditCard,
   CheckCircle2,
-  AlertTriangle,
   Flame,
   Siren
 } from 'lucide-react';

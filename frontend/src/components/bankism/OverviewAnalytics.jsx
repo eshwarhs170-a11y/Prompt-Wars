@@ -1,24 +1,11 @@
 import React from 'react';
-import { 
-  ShieldCheck, 
-  ShieldAlert, 
-  Activity, 
-  Lock, 
-  TrendingUp, 
-  AlertTriangle, 
-  Zap, 
-  Layers, 
-  CheckCircle2, 
-  XCircle,
-  ArrowUpRight
-} from 'lucide-react';
+import { TrendingUp, ArrowUpRight } from 'lucide-react';
 
 export default function OverviewAnalytics({ bankState, onNavigateTab }) {
   const metrics = bankState.metrics || {};
   const total = metrics.totalRequestsScanned || 0;
   const blocked = metrics.threatsBlocked || 0;
   const approved = metrics.approvedTransactions || 0;
-  const balance = bankState.account?.balance || 24850.75;
   const logs = bankState.auditLogs || [];
 
   // Derived percentages

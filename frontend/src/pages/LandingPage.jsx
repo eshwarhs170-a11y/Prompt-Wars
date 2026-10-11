@@ -11,20 +11,16 @@ import {
   Activity,
   Sun,
   Moon,
-  CheckCircle2,
-  FileCode,
   Shield,
-  ExternalLink,
   Cpu,
   Fingerprint,
   ChevronDown,
   Mail,
   Check,
-  Database,
-  ArrowUp,
-  FileText,
+  CheckCircle2,
   HelpCircle,
-  AlertTriangle
+  Database,
+  ArrowUp
 } from 'lucide-react';
 import '../styles/landing.css';
 import '../styles/theme.css';

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Ban,
-  CheckCircle2,
-  Lock,
   Crosshair,
   ScrollText,
   Landmark,

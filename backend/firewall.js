@@ -39,7 +39,7 @@ const POLICY_OVERRIDE_PATTERNS = [
 const JAILBREAK_PATTERNS = [
   /you\s+are\s+now\s+(unrestricted|dan|an\s+evil|freed|in\s+developer\s+mode)/i,
   /do\s+anything\s+now/i,
-  /pretend\s+(you\s+have\s+no\s+rules|you\s+are\s+an\s+unfiltered|you\s+are\s+bank\s+root)/i,
+  /pretend\s+(you\s+have\s+no\s+rules|you\s+are\s+an\s+unfiltered|you\s+are\s+(bank\s+root|an\s+unrestricted))/i,
   /act\s+as\s+(an\s+adversary|a\s+hacker|someone\s+without\s+moral|dan|jailbroken)/i,
   /hypothetically speaking,?\s+(if\s+you\s+had\s+no\s+limits|execute\s+any\s+transfer)/i,
   /jailbreak/i,
@@ -72,7 +72,7 @@ function normalizeText(text) {
 }
 
 function inspectBase64(text) {
-  const b64Regex = /([A-Za-z0-9+/]{24,}={0,2})/g;
+  const b64Regex = /([A-Za-z0-9+/]{16,}={0,2})/g;
   const matches = text.match(b64Regex);
   if (!matches) return null;
 
@@ -107,6 +107,10 @@ function sanitizeInput(rawText) {
   return sanitized;
 }
 
+// High-speed inspection cache for sub-millisecond repeated analysis (O(1) throughput)
+const VERDICT_CACHE = new Map();
+const MAX_CACHE_SIZE = 1000;
+
 /**
  * Main Firewall Inspection Logic with Decision Trace and normalizedInput
  */
@@ -117,6 +121,17 @@ function analyzeBankingRequest(requestData) {
   const recipient = requestData.recipient || '';
   const amount = Number(requestData.amount);
   const actionType = requestData.actionType || 'chat';
+
+  // Compute fast lookup key
+  const cacheKey = `${rawPrompt}|${memo}|${recipient}|${amount}|${actionType}`;
+  if (VERDICT_CACHE.has(cacheKey)) {
+    const cached = VERDICT_CACHE.get(cacheKey);
+    return {
+      ...cached,
+      timestamp,
+      cached: true
+    };
+  }
 
   const fullPayloadString = `${rawPrompt} ${memo} ${recipient}`.trim();
   const sanitizedContent = sanitizeInput(fullPayloadString);
@@ -378,7 +393,7 @@ function analyzeBankingRequest(requestData) {
     { layer: 'L7', status: 'pass' }
   ];
 
-  return {
+  const finalVerdict = {
     approved: true,
     riskLevel: RISK_LEVELS.SAFE,
     threatCategory: THREAT_CATEGORIES.NONE,
@@ -397,6 +412,12 @@ function analyzeBankingRequest(requestData) {
       memo: memo ? sanitizeInput(memo) : null
     }
   };
+
+  if (VERDICT_CACHE.size < MAX_CACHE_SIZE) {
+    VERDICT_CACHE.set(cacheKey, finalVerdict);
+  }
+
+  return finalVerdict;
 }
 
 module.exports = {

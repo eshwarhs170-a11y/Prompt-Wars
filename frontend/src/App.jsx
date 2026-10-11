@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import BankismDashboard from './components/BankismDashboard';
 import './index.css';
+import './styles/bankism.css';
+import './styles/landing.css';
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem('token') || 'demo-token');
@@ -28,22 +31,22 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* 1. Landing Page - First Page Everyone Sees */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* 2. Login Page */}
         <Route 
           path="/login" 
-          element={
-            token ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />
-          } 
+          element={<Login onLogin={handleLogin} />} 
         />
+
+        {/* 3. Main SOC Firewall Dashboard */}
         <Route 
-          path="/" 
-          element={
-            token ? (
-              <BankismDashboard user={user} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          } 
+          path="/dashboard" 
+          element={<BankismDashboard user={user} onLogout={handleLogout} />} 
         />
+
+        {/* Catch-all redirect to Landing */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

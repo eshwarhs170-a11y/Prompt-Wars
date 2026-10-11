@@ -452,49 +452,46 @@ export default function LandingPage({ theme, toggleTheme, isAuthenticated }) {
         </div>
       </div>
 
-      {/* Simple Clean Footer */}
+      {/* Clean Compact Website Footer */}
       <footer className="landing-footer-full">
         <div style={{
-          maxWidth: '1280px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingBottom: '32px',
-          borderBottom: '1px solid var(--border)',
           flexWrap: 'wrap',
-          gap: '24px'
+          gap: '20px'
         }}>
-          {/* Brand */}
-          <div className="footer-brand-title">
-            <div className="brand-mark" style={{ width: '30px', height: '30px' }}>
+          {/* Brand & Mission */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="brand-mark" style={{ width: '32px', height: '32px' }}>
               <ShieldCheck size={18} strokeWidth={2.4} />
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-primary)' }}>Bankism</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px' }}>Blue-Team AI Firewall &bull; Prompt-Wars x UVCE</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Blue-Team AI Firewall &bull; Prompt-Wars</div>
             </div>
           </div>
 
-          {/* Nav links */}
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          {/* Essential 4 Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
             <a href="#pipeline" className="footer-link-item">How It Works</a>
-            <a href="#features" className="footer-link-item">Architecture</a>
             <a href="#demo" className="footer-link-item">Live Demo</a>
             <a href="#faq" className="footer-link-item">FAQ</a>
-            <button onClick={handleEnterApp} className="footer-link-item" style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600 }}>
-              Launch Console &rarr;
+            <button onClick={handleEnterApp} className="footer-link-item" style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer' }}>
+              Console &rarr;
             </button>
           </div>
-        </div>
 
-        {/* Bottom bar */}
-        <div className="footer-bottom-bar" style={{ paddingTop: '20px' }}>
-          <span>&copy; 2026 Bankism &bull; Prompt-Wars x UVCE Hackathon</span>
-          <button className="scroll-top-btn" onClick={scrollToTop}>
-            <span>Back to Top</span>
-            <ArrowUp size={13} />
-          </button>
+          {/* Copyright & Back to Top */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+            <span>&copy; 2026 Bankism</span>
+            <button className="scroll-top-btn" onClick={scrollToTop} style={{ padding: '6px 10px', fontSize: '11px' }}>
+              <span>Top</span>
+              <ArrowUp size={12} />
+            </button>
+          </div>
         </div>
       </footer>
     </div>

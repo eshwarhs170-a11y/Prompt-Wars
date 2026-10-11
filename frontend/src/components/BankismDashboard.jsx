@@ -19,8 +19,11 @@ import AuditTable from './bankism/AuditTable';
 import LedgerView from './bankism/LedgerView';
 import RulesView from './bankism/RulesView';
 import PromptFlowView from './bankism/PromptFlowView';
+import OverviewAnalytics from './bankism/OverviewAnalytics';
+import { BarChart3 } from 'lucide-react';
 
 const TABS = [
+  { id: 'overview', label: 'SOC Overview', icon: BarChart3 },
   { id: 'firewall', label: 'Simulator', icon: Crosshair },
   { id: 'flow', label: 'Prompt Flow', icon: Cpu },
   { id: 'audit', label: 'Sentinel Audit Log', icon: ScrollText, count: true },
@@ -200,6 +203,13 @@ export default function BankismDashboard({ user, onLogout, theme, toggleTheme })
 
         {/* Tab Content Panels */}
         <div className="tab-panel" key={activeTab}>
+          {activeTab === 'overview' && (
+            <OverviewAnalytics 
+              bankState={bankState} 
+              onNavigateTab={(tab) => setActiveTab(tab)} 
+            />
+          )}
+
           {activeTab === 'firewall' && (
             <div className="arena">
               <IngestionPanel

@@ -291,16 +291,16 @@
   box-shadow: 0 4px 16px var(--accent-glow);
 }
 
-/* ============ FULL-FEATURED CORPORATE CYBER FOOTER ============ */
+/* ============ CLEAN COMPACT CYBER FOOTER ============ */
 .landing-footer-full {
   background: var(--bg-panel);
   border-top: 1px solid var(--border);
   position: relative;
   z-index: 10;
-  padding: 64px 48px 32px;
+  padding: 24px 32px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  margin-top: 80px;
+  margin-top: 48px;
 }
 
 .footer-top-grid {
